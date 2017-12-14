@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -J train-full-genes
+#SBATCH -J trainA
 #SBATCH -p normal_q
 #SBATCH -N 1
 #SBATCH -t 20:10:00
