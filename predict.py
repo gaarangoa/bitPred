@@ -1,5 +1,8 @@
 
 from keras.models import load_model
+from keras.preprocessing.text import one_hot
+from keras.preprocessing.sequence import pad_sequences
+import numpy as np 
 import json
 
 class Predict():

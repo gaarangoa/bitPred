@@ -14,5 +14,5 @@ source /work/newriver/gustavo1/deepLearning/bitPredEnv/bin/activate
 cd /work/newriver/gustavo1/deepLearning/bitPred
 module load cuda gcc/5.4.0 theano
 
-python deep_learning_model.py
+python train.py
 
