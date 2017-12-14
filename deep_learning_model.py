@@ -122,7 +122,7 @@ print(model.summary())
 
 # Train the model
 
-model.fit([padded_docs, padded_prices, padded_stocks], [categorical_labels], batch_size=128, epochs=1)
+model.fit([padded_docs, padded_prices, padded_stocks], [categorical_labels], batch_size=128, epochs=100)
 
 # model.fit([padded_docs, padded_prices], [encoded_labels, encoded_labels, encoded_labels], batch_size=128, epochs=1)
 
