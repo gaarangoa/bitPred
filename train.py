@@ -50,9 +50,9 @@ embedding_size = 500 # output of the embedded vector
 # Build the model
 text_model_input = Input(shape = (max_length,), dtype="int32", name = 'text_model_input')
 text_model = Embedding(input_dim = vocab_size, output_dim = embedding_size, input_length = max_length, name="text-embedding" )(text_model_input)
-text_model = LSTM(128, name = 'text_lstm' )(text_model)
-text_model = LSTM(128)(text_model)
-text_model_output = LSTM(128)(text_model)
+# text_model = LSTM(128, name = 'text_lstm-1', return_sequences=True)(text_model)
+# text_model = LSTM(128, name = "text-lstm-2", return_sequences=True)(text_model)
+text_model_output = LSTM(256, name = 'text-lstm-3')(text_model)
 # text_model_output = Dense(100, activation="relu", name="pred-text" )(text_model)
 
 # text_model_out = Dense(2, activation="relu", name="text-out" )(text_model_output)
@@ -104,8 +104,8 @@ stock_embedding_size = 6
 padded_stocks = np.array(pad_sequences(stocks, maxlen=max_length_stock_series, padding='pre'))
 
 stock_model_input = Input(shape = (max_length_stock_series, stock_embedding_size), dtype="float32", name = 'stock_model_input')
-stock_model = LSTM(64, name = 'stock_lstm', input_shape = (max_length_stock_series, stock_embedding_size) )(stock_model_input)
-stock_model = LSTM(64)(stock_model)
+stock_model = LSTM(64, return_sequences=True, name = 'stock_lstm', input_shape = (max_length_stock_series, stock_embedding_size) )(stock_model_input)
+# stock_model = LSTM(64)(stock_model, return_sequences=True)
 stock_model_output = LSTM(64)(stock_model)
 
 # **************************** #
@@ -113,7 +113,7 @@ stock_model_output = LSTM(64)(stock_model)
 # **************************** #
 
 merged_model = concatenate([text_model_output, price_model_output, stock_model_output], axis=1)
-merged_model = Dense(240, activation="relu")(merged_model)
+merged_model = Dense(512, activation="relu")(merged_model)
 merged_model = Dropout(0.5)(merged_model)
 merged_model = Dense(240, activation="relu")(merged_model)
 merged_model = Dropout(0.5)(merged_model)
