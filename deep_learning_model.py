@@ -50,7 +50,9 @@ embedding_size = 500 # output of the embedded vector
 # Build the model
 text_model_input = Input(shape = (max_length,), dtype="int32", name = 'text_model_input')
 text_model = Embedding(input_dim = vocab_size, output_dim = embedding_size, input_length = max_length, name="text-embedding" )(text_model_input)
-text_model_output = LSTM(128, name = 'text_lstm' )(text_model)
+text_model = LSTM(128, name = 'text_lstm' )(text_model)
+text_model = LSTM(128)(text_model)
+text_model_output = LSTM(128)(text_model)
 # text_model_output = Dense(100, activation="relu", name="pred-text" )(text_model)
 
 # text_model_out = Dense(2, activation="relu", name="text-out" )(text_model_output)
@@ -102,7 +104,9 @@ stock_embedding_size = 6
 padded_stocks = np.array(pad_sequences(stocks, maxlen=max_length_stock_series, padding='pre'))
 
 stock_model_input = Input(shape = (max_length_stock_series, stock_embedding_size), dtype="float32", name = 'stock_model_input')
-stock_model_output = LSTM(128, name = 'stock_lstm', input_shape = (max_length_stock_series, stock_embedding_size) )(stock_model_input)
+stock_model = LSTM(64, name = 'stock_lstm', input_shape = (max_length_stock_series, stock_embedding_size) )(stock_model_input)
+stock_model = LSTM(64)(stock_model)
+stock_model_output = LSTM(64)(stock_model)
 
 # **************************** #
 #        MERGE MODELS          #
