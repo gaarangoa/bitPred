@@ -1,7 +1,7 @@
 # this model is contains three main stages: 
 # 1) An LSTM to characterize the sequence from posts
 # 2) An LSTM to characterize the previous (series) price taking all parameters (volume, price, open, close, maximum, minimum)
-# 3) A 1D CNN to characterize the temporal price variation taking 10 time points. 
+# 3) A 1D CNN to characterize the temporal price variation taking 15 time points. 
 # 
 # The time interval consists of windows of 15 minutes. 
 # Data is taken from gdax (bitcoin price) and stocktwitts for post/text data. 
@@ -67,7 +67,7 @@ text_model_output = LSTM(128)(text_model)
 prices = [i['price'] for i in data]
 
 # pad sequences to fixed length
-max_length_price_series = 12
+max_length_price_series = 15
 padded_prices = np.array(pad_sequences(prices, maxlen=max_length_price_series, padding='pre'))
 padded_prices = np.expand_dims(padded_prices, axis=3)
 
@@ -99,7 +99,7 @@ for i in data:
         stock.append([10*j['volume'], j['high'], j['low'], j['open'], j['close'], j['high']-j['low']])
     stocks.append(stock)
 
-max_length_stock_series = 12
+max_length_stock_series = 15
 stock_embedding_size = 6
 padded_stocks = np.array(pad_sequences(stocks, maxlen=max_length_stock_series, padding='pre'))
 

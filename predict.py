@@ -18,9 +18,9 @@ class Predict():
         print("Loading input file and feature extraction")
         
         encoded_doc = one_hot(query['text'], self.vocab_size)
-        padded_doc = pad_sequences(encoded_doc, maxlen=self.max_length, padding='post')
+        padded_doc = pad_sequences([encoded_doc], maxlen=self.text_max_len, padding='post')
 
-        padded_price = np.array(pad_sequences(query['price'], maxlen=self.max_length_price_series, padding='pre'))
+        padded_price = np.array(pad_sequences([query['price']], maxlen=self.max_length_price_series, padding='pre'))
         padded_price = np.expand_dims(padded_price, axis=3)
 
         stock = []
@@ -31,17 +31,14 @@ class Predict():
 
         pred = self.model.predict([padded_doc, padded_price, padded_stock])
 
-        print("query\t%Low\t%High")
-        for ix,i in enumerate(pred):
-            print("\t".join([
-                    self.L[ix],
-                    str(100*i[0]),
-                    str(100*i[1])
-                ]))
+        return {
+            "bear": pred[0][0],
+            "bull": pred[0][1]
+        }
 
-def main(args):
+def test():
     data = json.load(open('data.json'))
-    predictor = Predict();
+    predictor = Predict(model_name="model.hdf5");
     predictor.pred(query = data[0])
 
 
