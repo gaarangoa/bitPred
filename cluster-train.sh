@@ -7,9 +7,12 @@
 #SBATCH --gres=gpu:pascal:1
 
 echo "Allocated GPU with ID $CUDA_VISIBLE_DEVICES"
-echo "Activate virtual environment: "
+# echo "Activate virtual environment: "
 export PYTHONNOUSERSITE=True
-source ~/deepargTrainEnv/bin/activate
+source /work/newriver/gustavo1/deepLearning/bitPredEnv/bin/activate
 
-module load cuda gcc/5.4.0
-python /work/newriver/gustavo1/deeparg/training/deeparg-ss/argdb/train_arc_genes.py
+cd /work/newriver/gustavo1/deepLearning/bitPred
+module load cuda gcc/5.4.0 theano
+
+python deep_learning_model.py
+
