@@ -17,7 +17,7 @@ class PredictSentiment(Resource):
     def post(self):
         args = request.get_json(force=True)
         # print(args)
-        return json.dumps(p.pred(query = args))
+        return jsonify(p.pred(query = args))
 
 api.add_resource(PredictSentiment, '/')
 

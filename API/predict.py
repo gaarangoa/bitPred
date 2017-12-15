@@ -32,8 +32,8 @@ class Predict():
         pred = self.model.predict([padded_doc, padded_price, padded_stock])
 
         return {
-            "bear": pred[0][0],
-            "bull": pred[0][1]
+            "bear": str(pred[0][0]),
+            "bull": str(pred[0][1])
         }
 
 def test():
