@@ -10,8 +10,8 @@ class Predict():
         self.model = load_model(model_name)
         self.vocab_size = 5000
         self.text_max_len = 50
-        self.max_length_price_series = 12
-        self.max_length_stock_series = 12
+        self.max_length_price_series = 15
+        self.max_length_stock_series = 15
         self.stock_embedding_size = 6
 
     def pred(self, query={}):

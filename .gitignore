@@ -2,3 +2,5 @@ data.json
 model.hdf5
 data-full.json
 *.pyc
+000-default.conf
+Dockerfile
