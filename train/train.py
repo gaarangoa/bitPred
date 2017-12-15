@@ -51,7 +51,7 @@ embedding_size = 500 # output of the embedded vector
 text_model_input = Input(shape = (max_length,), dtype="int32", name = 'text_model_input')
 text_model = Embedding(input_dim = vocab_size, mask_zero=True, output_dim = embedding_size, input_length = max_length, name="text-embedding" )(text_model_input)
 # text_model = LSTM(128, name = 'text_lstm-1', return_sequences=True)(text_model)
-text_model = Bidirectional(LSTM(128, name = "text-lstm-2", return_sequences=True)(text_model))
+text_model = LSTM(128, name = "text-lstm-2", return_sequences=True)(text_model)
 text_model_output = LSTM(256, name = 'text-lstm-3')(text_model)
 # text_model_output = Dense(100, activation="relu", name="pred-text" )(text_model)
 
