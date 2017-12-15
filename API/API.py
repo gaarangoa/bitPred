@@ -22,3 +22,4 @@ api.add_resource(PredictSentiment, '/predict/sentiment')
 
 if __name__ == '__main__':
     app.run(debug=True)
+
