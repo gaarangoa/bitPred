@@ -15,7 +15,7 @@ import json
 from keras.preprocessing.text import one_hot
 from keras.preprocessing.sequence import pad_sequences
 from keras.models import Sequential
-from keras.layers import Activation, Dense, Flatten, Dropout, LSTM, Conv1D, MaxPooling1D, GlobalAveragePooling1D, concatenate, Input, Reshape
+from keras.layers import Activation, Dense, Flatten, Dropout, LSTM, Conv1D, MaxPooling1D, GlobalAveragePooling1D, concatenate, Input, Reshape, Bidirectional
 from keras.layers.embeddings import Embedding
 from keras.utils import np_utils
 from keras.models import Model
@@ -51,7 +51,7 @@ embedding_size = 500 # output of the embedded vector
 text_model_input = Input(shape = (max_length,), dtype="int32", name = 'text_model_input')
 text_model = Embedding(input_dim = vocab_size, mask_zero=True, output_dim = embedding_size, input_length = max_length, name="text-embedding" )(text_model_input)
 # text_model = LSTM(128, name = 'text_lstm-1', return_sequences=True)(text_model)
-text_model = LSTM(128, name = "text-lstm-2", return_sequences=True)(text_model)
+text_model = Bidirectional(LSTM(128, name = "text-lstm-2", return_sequences=True)(text_model))
 text_model_output = LSTM(256, name = 'text-lstm-3')(text_model)
 # text_model_output = Dense(100, activation="relu", name="pred-text" )(text_model)
 
