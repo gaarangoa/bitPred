@@ -39,19 +39,19 @@ encoded_labels = labels_encoder.transform(raw_labels)
 categorical_labels = np_utils.to_categorical( encoded_labels )
 
 # encode the documents
-vocab_size = 5000
+vocab_size = 8000
 encoded_docs = [one_hot(d, vocab_size) for d in docs] #uses a hash function to represent words, if words are similar they will have collisions
 # encoded_docs = np.expand_dims(encoded_docs, axis=2)
 # pad documents to a max length of 50 words
-max_length = 50
+max_length = 150
 padded_docs = pad_sequences(encoded_docs, maxlen=max_length, padding='post')
 embedding_size = 500 # output of the embedded vector
 
 # Build the model
 text_model_input = Input(shape = (max_length,), dtype="int32", name = 'text_model_input')
-text_model = Embedding(input_dim = vocab_size, output_dim = embedding_size, input_length = max_length, name="text-embedding" )(text_model_input)
+text_model = Embedding(input_dim = vocab_size, mask_zero=True, output_dim = embedding_size, input_length = max_length, name="text-embedding" )(text_model_input)
 # text_model = LSTM(128, name = 'text_lstm-1', return_sequences=True)(text_model)
-# text_model = LSTM(128, name = "text-lstm-2", return_sequences=True)(text_model)
+text_model = LSTM(128, name = "text-lstm-2", return_sequences=True)(text_model)
 text_model_output = LSTM(256, name = 'text-lstm-3')(text_model)
 # text_model_output = Dense(100, activation="relu", name="pred-text" )(text_model)
 
@@ -64,23 +64,23 @@ text_model_output = LSTM(256, name = 'text-lstm-3')(text_model)
 # ---------------------------- #
 #     CNN prices topology      #
 # ---------------------------- #
-prices = [i['price'] for i in data]
+# prices = [i['price'] for i in data]
 
-# pad sequences to fixed length
-max_length_price_series = 15
-padded_prices = np.array(pad_sequences(prices, maxlen=max_length_price_series, padding='pre'))
-padded_prices = np.expand_dims(padded_prices, axis=3)
+# # pad sequences to fixed length
+# max_length_price_series = 15
+# padded_prices = np.array(pad_sequences(prices, maxlen=max_length_price_series, padding='pre'))
+# padded_prices = np.expand_dims(padded_prices, axis=3)
 
-price_vector_len = 1
+# price_vector_len = 1
 
 # the model
-price_model_input = Input( shape = (max_length_price_series, price_vector_len), name = "price_model_input" )
-price_model = Conv1D( 128, 3, activation = 'softmax', input_shape = (max_length_price_series, price_vector_len) )(price_model_input) 
-price_model = MaxPooling1D(3)(price_model)
-price_model = Dropout(0.5)(price_model)
-price_model = Conv1D(128, 2, activation='softmax')(price_model)
-price_model = MaxPooling1D()(price_model)
-price_model_output = Flatten()(price_model)
+# price_model_input = Input( shape = (max_length_price_series, price_vector_len), name = "price_model_input" )
+# price_model = Conv1D( 128, 3, activation = 'softmax', input_shape = (max_length_price_series, price_vector_len) )(price_model_input) 
+# price_model = MaxPooling1D(3)(price_model)
+# price_model = Dropout(0.5)(price_model)
+# price_model = Conv1D(128, 2, activation='softmax')(price_model)
+# price_model = MaxPooling1D()(price_model)
+# price_model_output = Flatten()(price_model)
 # price_model_output = Dense(100, activation="relu", name="pred-price")(price_model)
 
 # price_model_out = Dense(2, activation="softmax", name="price-out")(price_model_output)
@@ -93,37 +93,62 @@ price_model_output = Flatten()(price_model)
 # ---------------------------- #
 
 stocks = []
+prices = []
 for i in data:
     stock = []
+    price = []
     for j in i['stocks']:
-        stock.append([10*j['volume'], j['high'], j['low'], j['open'], j['close'], j['high']-j['low']])
+        stock.append([10*j['volume'], j['high']-j['low']])
+        price.append([j['high'], j['low']])
     stocks.append(stock)
+    prices.append(price)
 
 max_length_stock_series = 15
-stock_embedding_size = 6
+stock_embedding_size = 2
 padded_stocks = np.array(pad_sequences(stocks, maxlen=max_length_stock_series, padding='pre'))
+# padded_stocks = np.array(stocks)
 
 stock_model_input = Input(shape = (max_length_stock_series, stock_embedding_size), dtype="float32", name = 'stock_model_input')
-stock_model = LSTM(64, return_sequences=True, name = 'stock_lstm', input_shape = (max_length_stock_series, stock_embedding_size) )(stock_model_input)
+stock_model = LSTM(264, return_sequences=True, name = 'stock_lstm', input_shape = (max_length_stock_series, stock_embedding_size) )(stock_model_input)
 # stock_model = LSTM(64)(stock_model, return_sequences=True)
-stock_model_output = LSTM(64)(stock_model)
+stock_model_output = LSTM(264)(stock_model)
+
+
+# ---------------------------- #
+#         Price Model          #
+# ---------------------------- #
+
+max_length_price_series = 15
+price_embedding_size = 2
+padded_prices = np.array(pad_sequences(prices, maxlen=max_length_price_series, padding='pre'))
+# padded_prices = np.array(prices)
+
+price_model_input = Input(shape = (max_length_price_series, price_embedding_size), dtype="float32", name = 'price_model_input')
+price_model = LSTM(264, return_sequences=True, name = 'price_lstm', input_shape = (max_length_price_series, price_embedding_size) )(price_model_input)
+# stock_model = LSTM(64)(stock_model, return_sequences=True)
+price_model_output = LSTM(264)(price_model)
 
 # **************************** #
 #        MERGE MODELS          #
 # **************************** #
 
 merged_model = concatenate([text_model_output, price_model_output, stock_model_output], axis=1)
-merged_model = Dense(512, activation="relu")(merged_model)
+merged_model = Dense(1200, activation="relu")(merged_model)
 merged_model = Dropout(0.5)(merged_model)
-merged_model = Dense(240, activation="relu")(merged_model)
+merged_model = Dense(640, activation="relu")(merged_model)
 merged_model = Dropout(0.5)(merged_model)
+merged_model = Dense(420, activation="relu")(merged_model)
 merged_model_output = Dense(2, activation = "softmax", name = 'merged_model_output')(merged_model)
 
 
 model = Model(inputs = [text_model_input, price_model_input, stock_model_input], outputs = [merged_model_output])
 model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['acc'])
 print(model.summary())
-
+try:
+    from keras.utils import plot_model
+    plot_model(model, to_file='model.png')
+except:
+    pass
 # Train the model
 
 model.fit([padded_docs, padded_prices, padded_stocks], [categorical_labels], batch_size=128, epochs=100)
@@ -134,11 +159,5 @@ model.fit([padded_docs, padded_prices, padded_stocks], [categorical_labels], bat
 
 # save model
 model.save('model.hdf5')
-
-try:
-    from keras.utils import plot_model
-    plot_model(model, to_file='model.png')
-except:
-    pass
 
 
