@@ -18,7 +18,7 @@ class PredictSentiment(Resource):
         args = parser.parse_args()
         return p.pred(query = args)
 
-api.add_resource(PredictSentiment, '/predict/sentiment')
+api.add_resource(PredictSentiment, '/')
 
 if __name__ == '__main__':
     app.run(debug=True)
