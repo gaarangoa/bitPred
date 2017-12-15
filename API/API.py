@@ -16,6 +16,7 @@ class PredictSentiment(Resource):
         return {'info': 'This API is designed to predict the sentiment (bearish/bullish) of bitcoin data'}
     def post(self):
         args = parser.parse_args()
+        print(args)
         return p.pred(query = args)
 
 api.add_resource(PredictSentiment, '/')
