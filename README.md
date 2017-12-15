@@ -3,6 +3,6 @@ This repository contains a deep learning model using different architectures to 
 
 ### Server configuration to run restAPI
 \#login to docker image: 
-docker exec -it bit bash
+    docker exec -it bit bash
 \#then restart apache server:
-service apache2 restart
+    service apache2 restart
