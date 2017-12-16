@@ -5,14 +5,17 @@ from keras.preprocessing.sequence import pad_sequences
 import numpy as np 
 import json
 
+from train import model
+
 class Predict():
     def __init__(self, model_name="model.hdf5"):
+        self.par = model.Train()
         self.model = load_model(model_name)
-        self.vocab_size = 5000
-        self.text_max_len = 50
-        self.max_length_price_series = 15
-        self.max_length_stock_series = 15
-        self.stock_embedding_size = 6
+        self.vocab_size = self.par.vocab_size
+        self.text_max_len = self.par.text_max_len
+        self.max_length_price_series = self.par.max_length_price_series
+        self.max_length_stock_series = self.par.max_length_stock_series
+        self.stock_embedding_size = self.par.stock_embedding_size
 
     def pred(self, query={}):
         print("Loading input file and feature extraction")
