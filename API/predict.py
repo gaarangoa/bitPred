@@ -25,7 +25,7 @@ class Predict():
         for j in query['stocks']:
             stock.append([10*j['volume'], j['high']-j['low']])
             price.append([j['high'], j['low']])
-
+        
         padded_stock = np.array(pad_sequences([stock], maxlen=self.max_length_stock_series, padding='pre'))
         padded_price = np.array(pad_sequences([price], maxlen=self.max_length_price_series, padding='pre'))
         encoded_doc = one_hot(query['text'], self.vocab_size)
