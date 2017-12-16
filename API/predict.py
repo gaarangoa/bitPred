@@ -10,7 +10,7 @@ class Predict():
         self.par = model.Train()
         self.model = load_model(model_name)
         self.vocab_size = self.par.vocab_size
-        self.text_max_len = self.par.max_len
+        self.text_max_len = self.par.max_length
         self.max_length_price_series = self.par.max_length_price_series
         self.max_length_stock_series = self.par.max_length_stock_series
         self.stock_embedding_size = self.par.stock_embedding_size
