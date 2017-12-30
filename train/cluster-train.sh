@@ -14,6 +14,7 @@ echo "Allocated GPU with ID $CUDA_VISIBLE_DEVICES"
 module load anaconda2
 
 source activate gustavo1
+module load gcc cuda theano
 
 cd /work/newriver/gustavo1/deepLearning/bitPred/train/
 # module load cuda gcc/5.4.0 theano
