@@ -29,7 +29,7 @@ class Train():
         self.info = ''
         self.dataset = 'data.json'
         self.vocab_size = 8000
-        self.max_length = 150
+        self.max_length = 1000
         self.embedding_size = 500
         self.max_length_stock_series = 15
         self.stock_embedding_size = 2
