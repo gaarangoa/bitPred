@@ -11,6 +11,7 @@ echo "Allocated GPU with ID $CUDA_VISIBLE_DEVICES"
 # export PYTHONNOUSERSITE=True
 # source /work/newriver/gustavo1/deepLearning/bitPredEnv/bin/activate
 
+
 source activate gustavo1
 
 cd /work/newriver/gustavo1/deepLearning/bitPred/train/
