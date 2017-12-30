@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -J trainA
+#SBATCH -J bitPred
 #SBATCH -p normal_q
 #SBATCH -N 1
 #SBATCH -t 20:10:00
@@ -11,6 +11,7 @@ echo "Allocated GPU with ID $CUDA_VISIBLE_DEVICES"
 # export PYTHONNOUSERSITE=True
 # source /work/newriver/gustavo1/deepLearning/bitPredEnv/bin/activate
 
+module load anaconda2
 
 source activate gustavo1
 
