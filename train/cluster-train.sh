@@ -17,5 +17,6 @@ source activate gustavo1
 cd /work/newriver/gustavo1/deepLearning/bitPred/train/
 # module load cuda gcc/5.4.0 theano
 
+# run master scrpt
 python train.py
 
