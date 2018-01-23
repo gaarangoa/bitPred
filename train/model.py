@@ -28,7 +28,7 @@ class Train():
     def __init__(self):
         self.info = ''
         self.dataset = 'data.json'
-        self.vocab_size = 800
+        self.vocab_size = 500
         self.max_length = 1000
         self.embedding_size = 50
         self.max_length_stock_series = 30
@@ -43,8 +43,8 @@ class Train():
         # ---------------------------- #
 
         # dataset and class labels
-        docs = data['text'][-500:]
-        raw_labels = [ i[0] for i in data['labels'][-500:] ]
+        docs = data['text']
+        raw_labels = [ i[0] for i in data['labels'] ]
 
         labels_encoder = preprocessing.LabelEncoder()
         labels_encoder.fit(raw_labels)
@@ -65,7 +65,7 @@ class Train():
         #         Stocks Model         #
         # ---------------------------- #
 
-        stocks = data['stocks'][-500:]
+        stocks = data['stocks']
 
         padded_stocks = np.array(pad_sequences(stocks, maxlen=self.max_length_stock_series, padding='pre'))
         stock_model_input = Input(shape = (self.max_length_stock_series, self.stock_embedding_size), dtype="float32", name = 'stock_model_input')
