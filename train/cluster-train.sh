@@ -17,7 +17,7 @@ source /home/gustavo1/deep_learning/bitPred/env/bin/activate
 module load theano tensorflow
 
 # change to the directory where the training scripts are
-cd /work/newriver/gustavo1/deepLearning/bitPred/train/
+cd /home/gustavo1/deep_learning/bitPred/train/
 
 # run master scrpt
 python train.py
