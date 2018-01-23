@@ -28,13 +28,11 @@ class Train():
     def __init__(self):
         self.info = ''
         self.dataset = 'data.json'
-        self.vocab_size = 8000
+        self.vocab_size = 800
         self.max_length = 1000
-        self.embedding_size = 500
-        self.max_length_stock_series = 15
-        self.stock_embedding_size = 2
-        self.max_length_price_series = 15
-        self.price_embedding_size = 2
+        self.embedding_size = 50
+        self.max_length_stock_series = 30
+        self.stock_embedding_size = 5
 
     def run(self):
         # load the data
@@ -45,8 +43,9 @@ class Train():
         # ---------------------------- #
 
         # dataset and class labels
-        docs = [i['text'] for i in data]
-        raw_labels = [i['label'] for i in data]
+        docs = data['text'][-500:]
+        raw_labels = [ i[0] for i in data['labels'][-500:] ]
+
         labels_encoder = preprocessing.LabelEncoder()
         labels_encoder.fit(raw_labels)
         encoded_labels = labels_encoder.transform(raw_labels)
@@ -59,55 +58,34 @@ class Train():
         # Build the model
         text_model_input = Input(shape = (self.max_length,), dtype="int32", name = 'text_model_input')
         text_model = Embedding(input_dim = self.vocab_size, mask_zero=True, output_dim = self.embedding_size, input_length = self.max_length, name="text-embedding" )(text_model_input)
-        text_model = LSTM(128, name = "text-lstm-2", return_sequences=True)(text_model)
-        text_model_output = LSTM(256, name = 'text-lstm-3')(text_model)
+        text_model = LSTM(124, name = "text-lstm-2", return_sequences=True)(text_model)
+        text_model_output = LSTM(64, name = 'text-lstm-3')(text_model)
 
         # ---------------------------- #
         #         Stocks Model         #
         # ---------------------------- #
 
-        stocks = []
-        prices = []
-        for i in data:
-            stock = []
-            price = []
-            for j in i['stocks']:
-                stock.append([10*j['volume'], j['high']-j['low']])
-                price.append([j['high'], j['low']])
-            stocks.append(stock)
-            prices.append(price)
+        stocks = data['stocks'][-500:]
 
         padded_stocks = np.array(pad_sequences(stocks, maxlen=self.max_length_stock_series, padding='pre'))
         stock_model_input = Input(shape = (self.max_length_stock_series, self.stock_embedding_size), dtype="float32", name = 'stock_model_input')
-        stock_model = LSTM(264, return_sequences=True, name = 'stock_lstm', input_shape = (self.max_length_stock_series, self.stock_embedding_size) )(stock_model_input)
-        stock_model_output = LSTM(264)(stock_model)
+        stock_model = LSTM(64, return_sequences=True, name = 'stock_lstm', input_shape = (self.max_length_stock_series, self.stock_embedding_size) )(stock_model_input)
+        stock_model_output = LSTM(64)(stock_model)
 
-
-        # ---------------------------- #
-        #         Price Model          #
-        # ---------------------------- #
-
-        padded_prices = np.array(pad_sequences(prices, maxlen=self.max_length_price_series, padding='pre'))
-        # padded_prices = np.array(prices)
-
-        price_model_input = Input(shape = (self.max_length_price_series, self.price_embedding_size), dtype="float32", name = 'price_model_input')
-        price_model = LSTM(264, return_sequences=True, name = 'price_lstm', input_shape = (self.max_length_price_series, self.price_embedding_size) )(price_model_input)
-        # stock_model = LSTM(64)(stock_model, return_sequences=True)
-        price_model_output = LSTM(264)(price_model)
 
         # **************************** #
         #        MERGE MODELS          #
         # **************************** #
 
-        merged_model = concatenate([text_model_output, price_model_output, stock_model_output], axis=1)
-        merged_model = Dense(1200, activation="relu")(merged_model)
+        merged_model = concatenate([text_model_output, stock_model_output], axis=1)
+        merged_model = Dense(120, activation="relu")(merged_model)
         merged_model = Dropout(0.5)(merged_model)
-        merged_model = Dense(640, activation="relu")(merged_model)
+        merged_model = Dense(64, activation="relu")(merged_model)
         merged_model = Dropout(0.5)(merged_model)
-        merged_model = Dense(420, activation="relu")(merged_model)
-        merged_model_output = Dense(2, activation = "softmax", name = 'merged_model_output')(merged_model)
+        merged_model = Dense(42, activation="relu")(merged_model)
+        merged_model_output = Dense(3, activation = "softmax", name = 'merged_model_output')(merged_model)
 
-        model = Model(inputs = [text_model_input, price_model_input, stock_model_input], outputs = [merged_model_output])
+        model = Model(inputs = [text_model_input, stock_model_input], outputs = [merged_model_output])
         model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['acc'])
         print(model.summary())
 
@@ -118,7 +96,7 @@ class Train():
             pass
 
         # Train the model
-        model.fit([padded_docs, padded_prices, padded_stocks], [categorical_labels], batch_size=128, epochs=100)
+        model.fit([padded_docs, padded_stocks], [categorical_labels], batch_size=128, epochs=100)
 
         # save model
         model.save('model.hdf5')

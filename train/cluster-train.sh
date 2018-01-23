@@ -11,13 +11,18 @@ echo "Allocated GPU with ID $CUDA_VISIBLE_DEVICES"
 # export PYTHONNOUSERSITE=True
 # source /work/newriver/gustavo1/deepLearning/bitPredEnv/bin/activate
 
-module load anaconda2
+# dont use the local installed modules
+export PYTHONNOUSERSITE=True
 
-source activate gustavo1
-module load gcc cuda theano
+# activate the virtual environment in conda
+module load anaconda2 
+source activate machine-learning
 
+# load modules
+module load gcc/5.4.0 cuda theano nccl anaconda2
+
+# change to the directory where the training scripts are
 cd /work/newriver/gustavo1/deepLearning/bitPred/train/
-# module load cuda gcc/5.4.0 theano
 
 # run master scrpt
 python train.py
