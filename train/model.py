@@ -58,8 +58,8 @@ class Train():
         # Build the model
         text_model_input = Input(shape = (self.max_length,), dtype="int32", name = 'text_model_input')
         text_model = Embedding(input_dim = self.vocab_size, mask_zero=True, output_dim = self.embedding_size, input_length = self.max_length, name="text-embedding" )(text_model_input)
-        text_model = LSTM(124, name = "text-lstm-2", return_sequences=True)(text_model)
-        text_model_output = LSTM(64, name = 'text-lstm-3')(text_model)
+        text_model = LSTM(512, name = "text-lstm-2", return_sequences=True)(text_model)
+        text_model_output = LSTM(512, name = 'text-lstm-3')(text_model)
 
         # ---------------------------- #
         #         Stocks Model         #
@@ -69,8 +69,8 @@ class Train():
 
         padded_stocks = np.array(pad_sequences(stocks, maxlen=self.max_length_stock_series, padding='pre'))
         stock_model_input = Input(shape = (self.max_length_stock_series, self.stock_embedding_size), dtype="float32", name = 'stock_model_input')
-        stock_model = LSTM(64, return_sequences=True, name = 'stock_lstm', input_shape = (self.max_length_stock_series, self.stock_embedding_size) )(stock_model_input)
-        stock_model_output = LSTM(64)(stock_model)
+        stock_model = LSTM(256, return_sequences=True, name = 'stock_lstm', input_shape = (self.max_length_stock_series, self.stock_embedding_size) )(stock_model_input)
+        stock_model_output = LSTM(256)(stock_model)
 
 
         # **************************** #
@@ -78,11 +78,11 @@ class Train():
         # **************************** #
 
         merged_model = concatenate([text_model_output, stock_model_output], axis=1)
-        merged_model = Dense(120, activation="relu")(merged_model)
+        merged_model = Dense(1200, activation="relu")(merged_model)
         merged_model = Dropout(0.5)(merged_model)
-        merged_model = Dense(64, activation="relu")(merged_model)
+        merged_model = Dense(800, activation="relu")(merged_model)
         merged_model = Dropout(0.5)(merged_model)
-        merged_model = Dense(42, activation="relu")(merged_model)
+        merged_model = Dense(500, activation="relu")(merged_model)
         merged_model_output = Dense(3, activation = "softmax", name = 'merged_model_output')(merged_model)
 
         model = Model(inputs = [text_model_input, stock_model_input], outputs = [merged_model_output])
@@ -96,7 +96,7 @@ class Train():
             pass
 
         # Train the model
-        model.fit([padded_docs, padded_stocks], [categorical_labels], batch_size=128, epochs=100)
+        model.fit([padded_docs, padded_stocks], [categorical_labels], batch_size=1024, epochs=100)
 
         # save model
         model.save('model.hdf5')
