@@ -34,7 +34,7 @@ class Train():
         self.max_length_stock_series = 30
         self.stock_embedding_size = 5
         self.max_length_sentiment_series = 30
-        self.sentiment_embedding_size = 5
+        self.sentiment_embedding_size = 2
 
     def run(self):
         # load the data
