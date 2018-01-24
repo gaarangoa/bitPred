@@ -11,6 +11,8 @@ from sklearn import preprocessing
 import numpy as np
 import sys
 
+import re
+
 # this model is contains three main stages: 
 # 1) An LSTM to characterize the sequence from posts
 # 2) An LSTM to characterize the previous (series) price taking all parameters (volume, price, open, close, maximum, minimum)
@@ -40,7 +42,7 @@ class Train():
         # load the data
         data = json.load(open(self.dataset))
         index = [ix for ix,i in enumerate(data['text']) if i]
-        texti = [i for i in data['text'] if i]
+        texti = [re.sub(r'^https?:\/\/.*[\r\n]*', '', i, flags=re.MULTILINE) for i in data['text'] if i]
         labelsi = np.array(data['labels'])[index]
         sentimenti = np.array(data['sentiment'])[index]
         stocksi = np.array(data['stocks'])[index]
@@ -58,7 +60,7 @@ class Train():
 
         # dataset and class labels
         docs = data['text']
-        raw_labels = [ i[0] for i in data['labels'] ]
+        raw_labels = [ i[3] for i in data['labels'] ]
 
         labels_encoder = preprocessing.LabelEncoder()
         labels_encoder.fit(raw_labels)
