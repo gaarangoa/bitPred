@@ -43,8 +43,8 @@ class Train():
         # ---------------------------- #
 
         # dataset and class labels
-        docs = data['text']
-        raw_labels = [ i[0] for i in data['labels'] ]
+        docs = data['text'][-50000:]
+        raw_labels = [ i[0] for i in data['labels'][-50000:] ]
 
         labels_encoder = preprocessing.LabelEncoder()
         labels_encoder.fit(raw_labels)
@@ -65,7 +65,7 @@ class Train():
         #         Stocks Model         #
         # ---------------------------- #
 
-        stocks = data['stocks']
+        stocks = data['stocks'][-50000:]
 
         padded_stocks = np.array(pad_sequences(stocks, maxlen=self.max_length_stock_series, padding='pre'))
         stock_model_input = Input(shape = (self.max_length_stock_series, self.stock_embedding_size), dtype="float32", name = 'stock_model_input')
