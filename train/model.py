@@ -33,18 +33,32 @@ class Train():
         self.embedding_size = 50
         self.max_length_stock_series = 30
         self.stock_embedding_size = 5
+        self.max_length_sentiment_series = 30
+        self.sentiment_embedding_size = 5
 
     def run(self):
         # load the data
         data = json.load(open(self.dataset))
+        index = [ix for ix,i in enumerate(data['text']) if i]
+        texti = [i for i in data['text'] if i]
+        labelsi = np.array(data['labels'])[index]
+        sentimenti = np.array(data['sentiment'])[index]
+        stocksi = np.array(data['stocks'])[index]
+
+        data = {
+            "text": texti,
+            "labels": labelsi,
+            "sentiment": sentimenti,
+            "stocks": stocksi
+        }
 
         # ---------------------------- #
         #  topology for the text LSTM  #
         # ---------------------------- #
 
         # dataset and class labels
-        docs = data['text'][-50000:]
-        raw_labels = [ i[0] for i in data['labels'][-50000:] ]
+        docs = data['text']
+        raw_labels = [ i[0] for i in data['labels'] ]
 
         labels_encoder = preprocessing.LabelEncoder()
         labels_encoder.fit(raw_labels)
@@ -65,7 +79,7 @@ class Train():
         #         Stocks Model         #
         # ---------------------------- #
 
-        stocks = data['stocks'][-50000:]
+        stocks = data['stocks']
 
         padded_stocks = np.array(pad_sequences(stocks, maxlen=self.max_length_stock_series, padding='pre'))
         stock_model_input = Input(shape = (self.max_length_stock_series, self.stock_embedding_size), dtype="float32", name = 'stock_model_input')
@@ -73,11 +87,22 @@ class Train():
         stock_model_output = LSTM(256)(stock_model)
 
 
+        # ---------------------------- #
+        #       Sentiment Model        #
+        # ---------------------------- #
+
+        sentiment = data['sentiment']
+
+        padded_sentiment = np.array(pad_sequences(sentiment, maxlen=self.max_length_sentiment_series, padding='pre'))
+        sentiment_model_input = Input(shape = (self.max_length_sentiment_series, self.sentiment_embedding_size), dtype="float32", name = 'sentiment_model_input')
+        sentiment_model = LSTM(256, return_sequences=True, name = 'stock_lstm', input_shape = (self.max_length_sentiment_series, self.sentiment_embedding_size) )(sentiment_model_input)
+        sentiment_model_output = LSTM(256)(sentiment_model)
+
         # **************************** #
         #        MERGE MODELS          #
         # **************************** #
 
-        merged_model = concatenate([text_model_output, stock_model_output], axis=1)
+        merged_model = concatenate([text_model_output, stock_model_output, sentiment_model_output], axis=1)
         merged_model = Dense(1200, activation="relu")(merged_model)
         merged_model = Dropout(0.5)(merged_model)
         merged_model = Dense(800, activation="relu")(merged_model)
@@ -85,7 +110,7 @@ class Train():
         merged_model = Dense(500, activation="relu")(merged_model)
         merged_model_output = Dense(3, activation = "softmax", name = 'merged_model_output')(merged_model)
 
-        model = Model(inputs = [text_model_input, stock_model_input], outputs = [merged_model_output])
+        model = Model(inputs = [text_model_input, stock_model_input, sentiment_model_input], outputs = [merged_model_output])
         model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['acc'])
         print(model.summary())
 
@@ -96,7 +121,7 @@ class Train():
             pass
 
         # Train the model
-        model.fit([padded_docs, padded_stocks], [categorical_labels], batch_size=1024, epochs=100)
+        model.fit([padded_docs, padded_stocks, padded_sentiment], [categorical_labels], batch_size=1024, epochs=100)
 
         # save model
         model.save('model.hdf5')
