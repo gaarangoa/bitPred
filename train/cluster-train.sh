@@ -2,9 +2,10 @@
 #SBATCH -J bitPred
 #SBATCH -p normal_q
 #SBATCH -N 1
+#SBATCH -n 10
 #SBATCH -t 20:10:00
-#SBATCH --mem=200G
-#SBATCH --gres=gpu:pascal:1
+#SBATCH --mem=500G
+#SBATCH --gres=gpu:pascal:2
 
 echo "Allocated GPU with ID $CUDA_VISIBLE_DEVICES"
 # echo "Activate virtual environment: "
