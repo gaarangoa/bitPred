@@ -29,8 +29,8 @@ class Train():
         self.info = ''
         self.dataset = 'data.json'
         self.vocab_size = 500
-        self.max_length = 1000
-        self.embedding_size = 50
+        self.max_length = 500
+        self.embedding_size = 200
         self.max_length_stock_series = 30
         self.stock_embedding_size = 5
         self.max_length_sentiment_series = 30
@@ -72,8 +72,8 @@ class Train():
         # Build the model
         text_model_input = Input(shape = (self.max_length,), dtype="int32", name = 'text_model_input')
         text_model = Embedding(input_dim = self.vocab_size, mask_zero=True, output_dim = self.embedding_size, input_length = self.max_length, name="text-embedding" )(text_model_input)
-        text_model = LSTM(512, name = "text-lstm-2", return_sequences=True)(text_model)
-        text_model_output = LSTM(512, name = 'text-lstm-3')(text_model)
+        text_model_output = LSTM(512, name = "text-lstm-2", return_sequences=True)(text_model)
+        # text_model_output = LSTM(512, name = 'text-lstm-3')(text_model)
 
         # ---------------------------- #
         #         Stocks Model         #
@@ -83,8 +83,8 @@ class Train():
 
         padded_stocks = np.array(pad_sequences(stocks, maxlen=self.max_length_stock_series, padding='pre'))
         stock_model_input = Input(shape = (self.max_length_stock_series, self.stock_embedding_size), dtype="float32", name = 'stock_model_input')
-        stock_model = LSTM(256, return_sequences=True, name = 'stock_lstm', input_shape = (self.max_length_stock_series, self.stock_embedding_size) )(stock_model_input)
-        stock_model_output = LSTM(256)(stock_model)
+        stock_model_output = LSTM(256, return_sequences=True, name = 'stock_lstm', input_shape = (self.max_length_stock_series, self.stock_embedding_size) )(stock_model_input)
+        # stock_model_output = LSTM(256)(stock_model)
 
 
         # ---------------------------- #
