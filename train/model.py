@@ -41,7 +41,7 @@ class Train():
     def run(self):
         # load the data
         data = json.load(open(self.dataset))
-        index = [ix for ix,i in enumerate(data['text']) if i]
+        index = [ix for ix,i in enumerate(data['text']) if i][-50000]
         texti = [re.sub(r'^https?:\/\/.*[\r\n]*', '', i, flags=re.MULTILINE) for i in data['text'] if i]
         labelsi = np.array(data['labels'])[index]
         sentimenti = np.array(data['sentiment'])[index]
