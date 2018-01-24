@@ -95,7 +95,7 @@ class Train():
 
         padded_sentiment = np.array(pad_sequences(sentiment, maxlen=self.max_length_sentiment_series, padding='pre'))
         sentiment_model_input = Input(shape = (self.max_length_sentiment_series, self.sentiment_embedding_size), dtype="float32", name = 'sentiment_model_input')
-        sentiment_model = LSTM(256, return_sequences=True, name = 'stock_lstm', input_shape = (self.max_length_sentiment_series, self.sentiment_embedding_size) )(sentiment_model_input)
+        sentiment_model = LSTM(256, return_sequences=True, name = 'sentiment_lstm', input_shape = (self.max_length_sentiment_series, self.sentiment_embedding_size) )(sentiment_model_input)
         sentiment_model_output = LSTM(256)(sentiment_model)
 
         # **************************** #
