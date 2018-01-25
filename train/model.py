@@ -96,8 +96,8 @@ class Train():
         bearish = data['bearish']
 
         padded_bearish = np.array(pad_sequences(bearish, maxlen=self.max_length_stock_series, padding='pre'))
-        bearish_model_input = Input(shape = (self.max_length_stock_series, self.stock_embedding_size), dtype="float32", name = 'volume_model_input')
-        bearish_model_output = LSTM(256, return_sequences=False, name = 'volume_lstm', input_shape = (self.max_length_stock_series, self.stock_embedding_size) )(bearish_model_input)
+        bearish_model_input = Input(shape = (self.max_length_stock_series, self.stock_embedding_size), dtype="float32", name = 'bearish_model_input')
+        bearish_model_output = LSTM(256, return_sequences=False, name = 'bearish_lstm', input_shape = (self.max_length_stock_series, self.stock_embedding_size) )(bearish_model_input)
 
         # ---------------------------- #
         #       Sentiment Model        #
@@ -106,8 +106,8 @@ class Train():
         sentiment = data['bullish']
 
         padded_sentiment = np.array(pad_sequences(sentiment, maxlen=self.max_length_sentiment_series, padding='pre'))
-        sentiment_model_input = Input(shape = (self.max_length_sentiment_series, self.sentiment_embedding_size), dtype="float32", name = 'sentiment_model_input')
-        sentiment_model = LSTM(256, return_sequences=True, name = 'sentiment_lstm', input_shape = (self.max_length_sentiment_series, self.sentiment_embedding_size) )(sentiment_model_input)
+        sentiment_model_input = Input(shape = (self.max_length_sentiment_series, self.sentiment_embedding_size), dtype="float32", name = 'bullish_model_input')
+        sentiment_model = LSTM(256, return_sequences=True, name = 'bullish_lstm', input_shape = (self.max_length_sentiment_series, self.sentiment_embedding_size) )(sentiment_model_input)
         sentiment_model_output = LSTM(256)(sentiment_model)
 
         # **************************** #
