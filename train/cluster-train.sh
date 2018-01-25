@@ -3,7 +3,7 @@
 #SBATCH -p normal_q
 #SBATCH -N 1
 #SBATCH -n 10
-#SBATCH -t 20:10:00
+#SBATCH -t 144:00:00
 #SBATCH --mem=500G
 #SBATCH --gres=gpu:pascal:2
 
