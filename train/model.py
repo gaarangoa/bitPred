@@ -13,6 +13,8 @@ import sys
 
 import re
 
+from sklearn.preprocessing import StandardScaler
+
 # this model is contains three main stages: 
 # 1) An LSTM to characterize the sequence from posts
 # 2) An LSTM to characterize the previous (series) price taking all parameters (volume, price, open, close, maximum, minimum)
@@ -33,26 +35,14 @@ class Train():
         self.vocab_size = 500
         self.max_length = 800
         self.embedding_size = 200
-        self.max_length_stock_series = 30
-        self.stock_embedding_size = 5
-        self.max_length_sentiment_series = 30
-        self.sentiment_embedding_size = 2
+        self.max_length_stock_series = 20
+        self.stock_embedding_size = 1
+        self.max_length_sentiment_series = 20
+        self.sentiment_embedding_size = 1
 
     def run(self):
         # load the data
         data = json.load(open(self.dataset))
-        index = [ix for ix,i in enumerate(data['text']) if i][-50000]
-        texti = [re.sub(r'^https?:\/\/.*[\r\n]*', '', i, flags=re.MULTILINE) for i in data['text'] if i]
-        labelsi = np.array(data['labels'])[index]
-        sentimenti = np.array(data['sentiment'])[index]
-        stocksi = np.array(data['stocks'])[index]
-
-        data = {
-            "text": texti,
-            "labels": labelsi,
-            "sentiment": sentimenti,
-            "stocks": stocksi
-        }
 
         # ---------------------------- #
         #  topology for the text LSTM  #
@@ -81,7 +71,7 @@ class Train():
         #         Stocks Model         #
         # ---------------------------- #
 
-        stocks = data['stocks']
+        stocks = data['close']
 
         padded_stocks = np.array(pad_sequences(stocks, maxlen=self.max_length_stock_series, padding='pre'))
         stock_model_input = Input(shape = (self.max_length_stock_series, self.stock_embedding_size), dtype="float32", name = 'stock_model_input')
@@ -93,7 +83,7 @@ class Train():
         #       Sentiment Model        #
         # ---------------------------- #
 
-        sentiment = data['sentiment']
+        sentiment = data['bullish']
 
         padded_sentiment = np.array(pad_sequences(sentiment, maxlen=self.max_length_sentiment_series, padding='pre'))
         sentiment_model_input = Input(shape = (self.max_length_sentiment_series, self.sentiment_embedding_size), dtype="float32", name = 'sentiment_model_input')
