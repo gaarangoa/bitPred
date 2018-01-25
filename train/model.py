@@ -83,7 +83,7 @@ class Train():
         #         Volumen  Model       #
         # ---------------------------- #
 
-        stocks = data['volume']
+        volume = data['volume']
 
         padded_volume = np.array(pad_sequences(volume, maxlen=self.max_length_stock_series, padding='pre'))
         volume_model_input = Input(shape = (self.max_length_stock_series, self.stock_embedding_size), dtype="float32", name = 'volume_model_input')
@@ -93,7 +93,7 @@ class Train():
         #         Bearish  Model       #
         # ---------------------------- #
 
-        stocks = data['bearish']
+        bearish = data['bearish']
 
         padded_bearish = np.array(pad_sequences(bearish, maxlen=self.max_length_stock_series, padding='pre'))
         bearish_model_input = Input(shape = (self.max_length_stock_series, self.stock_embedding_size), dtype="float32", name = 'volume_model_input')
