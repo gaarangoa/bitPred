@@ -32,7 +32,7 @@ class Train():
     def __init__(self):
         self.info = ''
         self.dataset = 'data.json'
-        self.vocab_size = 500
+        self.vocab_size = 2000
         self.max_length = 800
         self.embedding_size = 200
         self.max_length_stock_series = 20
@@ -68,7 +68,7 @@ class Train():
         # text_model_output = LSTM(512, name = 'text-lstm-3')(text_model)
 
         # ---------------------------- #
-        #         Stocks Model         #
+        #         Close  Model         #
         # ---------------------------- #
 
         stocks = data['close']
@@ -78,6 +78,26 @@ class Train():
         stock_model_output = LSTM(256, return_sequences=False, name = 'stock_lstm', input_shape = (self.max_length_stock_series, self.stock_embedding_size) )(stock_model_input)
         # stock_model_output = LSTM(256)(stock_model)
 
+
+        # ---------------------------- #
+        #         Volumen  Model       #
+        # ---------------------------- #
+
+        stocks = data['volume']
+
+        padded_volume = np.array(pad_sequences(volume, maxlen=self.max_length_stock_series, padding='pre'))
+        volume_model_input = Input(shape = (self.max_length_stock_series, self.stock_embedding_size), dtype="float32", name = 'volume_model_input')
+        volume_model_output = LSTM(256, return_sequences=False, name = 'volume_lstm', input_shape = (self.max_length_stock_series, self.stock_embedding_size) )(volume_model_input)
+
+        # ---------------------------- #
+        #         Bearish  Model       #
+        # ---------------------------- #
+
+        stocks = data['bearish']
+
+        padded_bearish = np.array(pad_sequences(bearish, maxlen=self.max_length_stock_series, padding='pre'))
+        bearish_model_input = Input(shape = (self.max_length_stock_series, self.stock_embedding_size), dtype="float32", name = 'volume_model_input')
+        bearish_model_output = LSTM(256, return_sequences=False, name = 'volume_lstm', input_shape = (self.max_length_stock_series, self.stock_embedding_size) )(bearish_model_input)
 
         # ---------------------------- #
         #       Sentiment Model        #
@@ -94,7 +114,7 @@ class Train():
         #        MERGE MODELS          #
         # **************************** #
 
-        merged_model = concatenate([text_model_output, stock_model_output, sentiment_model_output], axis=1)
+        merged_model = concatenate([text_model_output, stock_model_output, sentiment_model_output, volume_model_output, bearish_model_output], axis=1)
         merged_model = Dense(800, activation="relu")(merged_model)
         merged_model = Dropout(0.5)(merged_model)
         merged_model = Dense(600, activation="relu")(merged_model)
@@ -102,7 +122,7 @@ class Train():
         merged_model = Dense(200, activation="relu")(merged_model)
         merged_model_output = Dense(3, activation = "softmax", name = 'merged_model_output')(merged_model)
 
-        model = Model(inputs = [text_model_input, stock_model_input, sentiment_model_input], outputs = [merged_model_output])
+        model = Model(inputs = [text_model_input, stock_model_input, sentiment_model_input, volume_model_input, bearish_model_input], outputs = [merged_model_output])
         model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['acc'])
         print(model.summary())
 
@@ -113,7 +133,7 @@ class Train():
             pass
 
         # Train the model
-        model.fit([padded_docs, padded_stocks, padded_sentiment], [categorical_labels], batch_size=1024, epochs=100)
+        model.fit([padded_docs, padded_stocks, padded_sentiment, padded_volume, padded_bearish], [categorical_labels], batch_size=254, epochs=200)
 
         # save model
         model.save('model.hdf5')
