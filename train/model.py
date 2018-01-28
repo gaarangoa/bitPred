@@ -134,7 +134,9 @@ class Train():
             pass
 
         # Train the model
-        checkpointer = ModelCheckpoint(filepath='weights.hdf5', verbose=1, save_best_only=True, save_weights_only=False)
+        checkpointer = ModelCheckpoint(filepath='./epoch/weights.hdf5', verbose=1, save_weights_only=False)
+        # tensorboard = keras.callbacks.TensorBoard(log_dir='./logs', histogram_freq=1, batch_size=254, write_graph=True, write_grads=True, write_images=True, embeddings_freq=1)
+
         model.fit([padded_docs, padded_stocks, padded_sentiment, padded_volume, padded_bearish], [categorical_labels], batch_size=254, epochs=200, callbacks=[checkpointer])
 
         # save model
