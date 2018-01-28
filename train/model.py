@@ -6,6 +6,7 @@ from keras.layers import Activation, Dense, Flatten, Dropout, LSTM, Conv1D, MaxP
 from keras.layers.embeddings import Embedding
 from keras.utils import np_utils
 from keras.models import Model
+from keras.callbacks import ModelCheckpoint
 
 from sklearn import preprocessing
 import numpy as np
@@ -133,7 +134,8 @@ class Train():
             pass
 
         # Train the model
-        model.fit([padded_docs, padded_stocks, padded_sentiment, padded_volume, padded_bearish], [categorical_labels], batch_size=254, epochs=200)
+        checkpointer = ModelCheckpoint(filepath='weights.hdf5', verbose=1, save_best_only=True, save_weights_only=False)
+        model.fit([padded_docs, padded_stocks, padded_sentiment, padded_volume, padded_bearish], [categorical_labels], batch_size=254, epochs=200, callbacks=[checkpointer])
 
         # save model
         model.save('model.hdf5')
