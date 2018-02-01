@@ -74,15 +74,15 @@ def format_input(data):
     comments = [" ".join([i[8] for i in table])]
 
     return {
-        "timestamp":timestamp,
-        "text": comments,
-        "open": np.array(sopen),
-        "close": np.array(sclose),
-        "high": np.array(high),
-        "low": np.array(low),
-        "volume": np.array(volume),
-        "bearish": np.array(bearish),
-        "bullish": np.array(bullish)
+        "timestamp":[timestamp],
+        "text": [comments],
+        "open": [np.array(sopen)],
+        "close": [np.array(sclose)],
+        "high": [np.array(high)],
+        "low": [np.array(low)],
+        "volume": [np.array(volume)],
+        "bearish": [np.array(bearish)],
+        "bullish": [np.array(bullish)]
     }
 
 
