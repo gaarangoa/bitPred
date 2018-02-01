@@ -73,7 +73,7 @@ class Train():
         #         Close  Model         #
         # ---------------------------- #
 
-        stocks = data['close']
+        stocks = np.array(data['close'])
 
         # padded_stocks = np.array(pad_sequences(stocks, maxlen=self.max_length_stock_series, padding='pre'))
         stock_model_input = Input(shape = (self.max_length_stock_series, self.stock_embedding_size), dtype="float32", name = 'stock_model_input')
@@ -85,7 +85,7 @@ class Train():
         #         Volumen  Model       #
         # ---------------------------- #
 
-        volume = data['volume']
+        volume = np.array(data['volume'])
 
         # padded_volume = np.array(pad_sequences(volume, maxlen=self.max_length_stock_series, padding='pre'))
         volume_model_input = Input(shape = (self.max_length_stock_series, self.stock_embedding_size), dtype="float32", name = 'volume_model_input')
@@ -95,7 +95,7 @@ class Train():
         #         Bearish  Model       #
         # ---------------------------- #
 
-        bearish = data['bearish']
+        bearish = np.array(data['bearish'])
 
         # padded_bearish = np.array(pad_sequences(bearish, maxlen=self.max_length_stock_series, padding='pre'))
         bearish_model_input = Input(shape = (self.max_length_stock_series, self.stock_embedding_size), dtype="float32", name = 'bearish_model_input')
@@ -105,7 +105,7 @@ class Train():
         #       Sentiment Model        #
         # ---------------------------- #
 
-        sentiment = data['bullish']
+        sentiment = np.array(data['bullish'])
 
         # padded_sentiment = np.array(pad_sequences(sentiment, maxlen=self.max_length_sentiment_series, padding='pre'))
         sentiment_model_input = Input(shape = (self.max_length_sentiment_series, self.sentiment_embedding_size), dtype="float32", name = 'bullish_model_input')
