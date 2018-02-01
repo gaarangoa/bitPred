@@ -29,17 +29,18 @@ from sklearn.preprocessing import StandardScaler
 # 
 # Developed by Gustavo Arango
 
+import config 
 class Train():
     def __init__(self):
         self.info = ''
         self.dataset = 'data.json'
-        self.vocab_size = 2000
-        self.max_length = 800
-        self.embedding_size = 200
-        self.max_length_stock_series = 20
-        self.stock_embedding_size = 1
-        self.max_length_sentiment_series = 20
-        self.sentiment_embedding_size = 1
+        self.vocab_size = config.vocab_size
+        self.max_length = config.max_length
+        self.embedding_size = config.embedding_size
+        self.max_length_stock_series = config.max_length_stock_series
+        self.stock_embedding_size = config.stock_embedding_size
+        self.max_length_sentiment_series = config.max_length_sentiment_series
+        self.sentiment_embedding_size = config.sentiment_embedding_size
 
     def run(self):
         # load the data
@@ -51,7 +52,7 @@ class Train():
 
         # dataset and class labels
         docs = data['text']
-        raw_labels = [ i[3] for i in data['labels'] ]
+        raw_labels = [ i[2] for i in data['labels'] ]
 
         labels_encoder = preprocessing.LabelEncoder()
         labels_encoder.fit(raw_labels)
@@ -74,7 +75,7 @@ class Train():
 
         stocks = data['close']
 
-        padded_stocks = np.array(pad_sequences(stocks, maxlen=self.max_length_stock_series, padding='pre'))
+        # padded_stocks = np.array(pad_sequences(stocks, maxlen=self.max_length_stock_series, padding='pre'))
         stock_model_input = Input(shape = (self.max_length_stock_series, self.stock_embedding_size), dtype="float32", name = 'stock_model_input')
         stock_model_output = LSTM(256, return_sequences=False, name = 'stock_lstm', input_shape = (self.max_length_stock_series, self.stock_embedding_size) )(stock_model_input)
         # stock_model_output = LSTM(256)(stock_model)
@@ -86,7 +87,7 @@ class Train():
 
         volume = data['volume']
 
-        padded_volume = np.array(pad_sequences(volume, maxlen=self.max_length_stock_series, padding='pre'))
+        # padded_volume = np.array(pad_sequences(volume, maxlen=self.max_length_stock_series, padding='pre'))
         volume_model_input = Input(shape = (self.max_length_stock_series, self.stock_embedding_size), dtype="float32", name = 'volume_model_input')
         volume_model_output = LSTM(256, return_sequences=False, name = 'volume_lstm', input_shape = (self.max_length_stock_series, self.stock_embedding_size) )(volume_model_input)
 
@@ -96,7 +97,7 @@ class Train():
 
         bearish = data['bearish']
 
-        padded_bearish = np.array(pad_sequences(bearish, maxlen=self.max_length_stock_series, padding='pre'))
+        # padded_bearish = np.array(pad_sequences(bearish, maxlen=self.max_length_stock_series, padding='pre'))
         bearish_model_input = Input(shape = (self.max_length_stock_series, self.stock_embedding_size), dtype="float32", name = 'bearish_model_input')
         bearish_model_output = LSTM(256, return_sequences=False, name = 'bearish_lstm', input_shape = (self.max_length_stock_series, self.stock_embedding_size) )(bearish_model_input)
 
@@ -106,7 +107,7 @@ class Train():
 
         sentiment = data['bullish']
 
-        padded_sentiment = np.array(pad_sequences(sentiment, maxlen=self.max_length_sentiment_series, padding='pre'))
+        # padded_sentiment = np.array(pad_sequences(sentiment, maxlen=self.max_length_sentiment_series, padding='pre'))
         sentiment_model_input = Input(shape = (self.max_length_sentiment_series, self.sentiment_embedding_size), dtype="float32", name = 'bullish_model_input')
         sentiment_model = LSTM(256, return_sequences=True, name = 'bullish_lstm', input_shape = (self.max_length_sentiment_series, self.sentiment_embedding_size) )(sentiment_model_input)
         sentiment_model_output = LSTM(256)(sentiment_model)
@@ -134,10 +135,10 @@ class Train():
             pass
 
         # Train the model
-        checkpointer = ModelCheckpoint(filepath='./epoch/weights.hdf5', verbose=1, save_weights_only=False)
+        checkpointer = ModelCheckpoint(filepath='./epoch/model.hdf5', verbose=1, save_weights_only=False)
         # tensorboard = keras.callbacks.TensorBoard(log_dir='./logs', histogram_freq=1, batch_size=254, write_graph=True, write_grads=True, write_images=True, embeddings_freq=1)
 
-        model.fit([padded_docs, padded_stocks, padded_sentiment, padded_volume, padded_bearish], [categorical_labels], batch_size=254, epochs=200, callbacks=[checkpointer])
+        model.fit([padded_docs, stocks, sentiment, volume, bearish], [categorical_labels], batch_size=254, epochs=200, callbacks=[checkpointer])
 
         # save model
         model.save('model.hdf5')
