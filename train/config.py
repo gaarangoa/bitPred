@@ -1,5 +1,5 @@
 vocab_size = 2000
-max_length = 800
+max_length = 400
 embedding_size = 200
 max_length_stock_series = 15
 stock_embedding_size = 1

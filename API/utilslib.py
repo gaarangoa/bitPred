@@ -75,7 +75,7 @@ def format_input(data):
 
     return {
         "timestamp":[timestamp],
-        "text": [comments],
+        "text": comments,
         "open": [np.array(sopen)],
         "close": [np.array(sclose)],
         "high": [np.array(high)],
