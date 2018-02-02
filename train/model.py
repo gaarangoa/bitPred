@@ -52,7 +52,7 @@ class Train():
 
         # dataset and class labels
         docs = data['text']
-        raw_labels = [ i[1] for i in data['labels'] ]
+        raw_labels = [ i[0] for i in data['labels'] ]
 
         labels_encoder = preprocessing.LabelEncoder()
         labels_encoder.fit(raw_labels)
