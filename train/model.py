@@ -99,7 +99,7 @@ class Train():
 
         # padded_bearish = np.array(pad_sequences(bearish, maxlen=self.max_length_stock_series, padding='pre'))
         bearish_model_input = Input(shape = (self.max_length_stock_series, self.stock_embedding_size), dtype="float32", name = 'bearish_model_input')
-        bearish_model = LSTM(256, return_sequences=False, name = 'bearish_lstm', input_shape = (self.max_length_stock_series, self.stock_embedding_size) )(bearish_model_input)
+        bearish_model = LSTM(256, return_sequences=True, name = 'bearish_lstm', input_shape = (self.max_length_stock_series, self.stock_embedding_size) )(bearish_model_input)
         bearish_model_output = LSTM(256)(bearish_model)
 
         # ---------------------------- #
