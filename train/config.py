@@ -1,6 +1,6 @@
-vocab_size = 5000
-max_length = 1200
-embedding_size = 200
+vocab_size = 1000
+max_length = 500
+embedding_size = 400
 max_length_stock_series = 15
 stock_embedding_size = 1
 max_length_sentiment_series = 15
