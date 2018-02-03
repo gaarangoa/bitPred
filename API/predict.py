@@ -17,10 +17,11 @@ class Predict():
         self.model = load_model(model_name)
         self.client = MongoClient("mongodb://localhost", 11914)
         self.symbol = 'BTC.X'
-        self.timeframe = "history_5m"
-        self.data_window = 20
+        self.timeframe = "history_15m"
+        self.data_window = 15
 
-    def pred(self, max_timestamp):
+    def pred(self, max_timestamp=0, data_window="history_15"):
+        self.data_window = data_window
         # assuming query has the data in the right format
         print("Loading input file")
         data = utilslib.get_data(max_timestamp=max_timestamp, client=self.client, symbol=self.symbol, timeframe=self.timeframe, window=self.data_window)
@@ -64,11 +65,11 @@ def vis(data=[], p=[]):
     ax = fig.add_subplot(111)
     # 
     ax.plot(price)
-    ax.scatter(21, price[21])
-    ax.scatter(18, price[18])
+    ax.scatter(14, price[14])
+    ax.scatter(15, price[15])
     tx = 'Bullish: '+str(pred['bull']) + '\nBearish: '+str(pred['bear']) + '\nStay: '+ str(pred['stay'])
-    ax.text(20, price[21], tx)
-    ax.text(18, price[18], "Now")
+    ax.text(18, price[15], tx)
+    ax.text(14, price[11], "Now")
     ax.text(1, max(price), t1.strftime(fmt))
     ax.text(10, max(price), t2.strftime(fmt))
     plt.show()
@@ -77,10 +78,10 @@ def vis(data=[], p=[]):
 
 def test():
     p = Predict()
-    time = 1509600476
-    for _ in range(100):
-        x = p.pred(time)
+    time = 1517515200
+    for _ in range(500):
+        x = p.pred(max_timestamp=time, data_window=15)
         vis(data=x, p=p)
-        time+=300
+        time+=900
 
 

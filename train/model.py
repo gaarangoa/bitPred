@@ -123,7 +123,7 @@ class Train():
         merged_model = Dense(1000, activation="relu")(merged_model)
         merged_model = Dropout(0.5)(merged_model)
         merged_model = Dense(600, activation="relu")(merged_model)
-        merged_model_output = Dense(3, activation = "softmax", name = 'merged_model_output')(merged_model)
+        merged_model_output = Dense(2, activation = "softmax", name = 'merged_model_output')(merged_model)
 
         model = Model(inputs = [text_model_input, stock_model_input, sentiment_model_input, volume_model_input, bearish_model_input], outputs = [merged_model_output])
         model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['acc'])
