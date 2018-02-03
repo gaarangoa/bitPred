@@ -11,8 +11,11 @@ import utilslib
 import re
 from train import model
 from train import config
+from sklearn.preprocessing import StandardScaler
+
+scaler = StandardScaler()
 class Predict():
-    def __init__(self, model_name="./API/model.hdf5"):
+    def __init__(self, model_name="./API/regression.hdf5"):
         self.par = model.Train()
         self.model = load_model(model_name)
         self.client = MongoClient("mongodb://localhost", 11914)
@@ -37,11 +40,7 @@ class Predict():
         
         pred = self.model.predict([padded_docs, stocks, sentiment, volume, bearish])
 
-        return [{
-            "bear": pred[0][0],
-            "bull": pred[0][1],
-            "stay": pred[0][2]
-        }, data]
+        return [pred, data]
 
 
 import matplotlib.pyplot as plt
@@ -54,24 +53,29 @@ def vis(data=[], p=[]):
     data = data[1]
     first_timestamp = data['timestamp'][0][0]
     gdax = p.client.gdax[p.timeframe]
-    stocks = [i for i in gdax.find({"time":{"$gte": first_timestamp}}).sort([("time", pymongo.ASCENDING)]).limit(25)]
-    price = np.array([i['close'] for i in stocks])
+    stocks = [i for i in gdax.find({"time":{"$gte": first_timestamp}}).sort([("time", pymongo.ASCENDING)]).limit(20)]
+    price2 = scaler.fit_transform( np.array([i['close'] for i in stocks]).reshape(-1, 1) )
+    # 
+    price = data['close'][0]
     # 
     fmt = "%Y-%m-%d %H:%M:%S"
-    t1 = datetime.datetime.fromtimestamp(float(stocks[18]['time']))
-    t2 = datetime.datetime.fromtimestamp(float(stocks[22]['time']))
+    t1 = datetime.datetime.fromtimestamp(float(stocks[13]['time']))
+    t2 = datetime.datetime.fromtimestamp(float(stocks[14]['time']))
     #
     fig = plt.figure()
     ax = fig.add_subplot(111)
     # 
-    ax.plot(price)
-    ax.scatter(14, price[14])
-    ax.scatter(15, price[15])
-    tx = 'Bullish: '+str(pred['bull']) + '\nBearish: '+str(pred['bear']) + '\nStay: '+ str(pred['stay'])
-    ax.text(18, price[15], tx)
-    ax.text(14, price[11], "Now")
-    ax.text(1, max(price), t1.strftime(fmt))
-    ax.text(10, max(price), t2.strftime(fmt))
+    # ax.scatter(price2)
+    # ax.scatter(price)
+    # ax.plot(price)
+    ax.plot(price2)
+    ax.scatter(14, price2[14])
+    ax.scatter(15, pred)
+    tx = "Pred: "+str(pred[0][0])
+    ax.text(15, pred, tx)
+    ax.text(14, price2[14], "Now")
+    ax.text(1, max(price2), t1.strftime(fmt))
+    ax.text(10, max(price2), t2.strftime(fmt))
     plt.show()
 
 

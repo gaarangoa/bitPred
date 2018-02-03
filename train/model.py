@@ -52,7 +52,7 @@ class Train():
 
         # dataset and class labels
         docs = data['text']
-        raw_labels = np.array([ i[0] for i in data['regression'] ])
+        raw_labels = np.array([ [i[0]] for i in data['regression'] ])
 
         labels_encoder = preprocessing.LabelEncoder()
         labels_encoder.fit(raw_labels)
@@ -66,7 +66,7 @@ class Train():
         # Build the model
         text_model_input = Input(shape = (self.max_length,), dtype="int32", name = 'text_model_input')
         text_model = Embedding(input_dim = self.vocab_size, mask_zero=True, output_dim = self.embedding_size, input_length = self.max_length, name="text-embedding" )(text_model_input)
-        text_model_output = LSTM(512, name = "text-lstm-2", return_sequences=False)(text_model)
+        text_model_output = LSTM(100, name = "text-lstm-2", return_sequences=False)(text_model)
         # text_model_output = LSTM(512, name = 'text-lstm-3')(text_model)
 
         # ---------------------------- #
@@ -127,7 +127,7 @@ class Train():
         merged_model_output = Dense(1, kernel_initializer='normal', activation = "relu", name = 'merged_model_output')(merged_model)
 
         model = Model(inputs = [text_model_input, stock_model_input, sentiment_model_input, volume_model_input, bearish_model_input], outputs = [merged_model_output])
-        model.compile(optimizer='adam', loss='mean_squared_error', metrics=['acc'])
+        model.compile(optimizer='adam', loss='mae')
         print(model.summary())
 
         try:
@@ -140,7 +140,7 @@ class Train():
         checkpointer = ModelCheckpoint(filepath='./epoch/model.hdf5', verbose=1, save_weights_only=False)
         # tensorboard = keras.callbacks.TensorBoard(log_dir='./logs', histogram_freq=1, batch_size=254, write_graph=True, write_grads=True, write_images=True, embeddings_freq=1)
 
-        model.fit([padded_docs, stocks, sentiment, volume, bearish], [raw_labels], batch_size=254, epochs=200, callbacks=[checkpointer])
+        model.fit([padded_docs, stocks, sentiment, volume, bearish], [raw_labels], batch_size=100, epochs=200, callbacks=[checkpointer])
 
         # save model
         model.save('model.hdf5')
