@@ -140,7 +140,7 @@ class Train():
         checkpointer = ModelCheckpoint(filepath='./epoch/model.hdf5', verbose=1, save_weights_only=False)
         # tensorboard = keras.callbacks.TensorBoard(log_dir='./logs', histogram_freq=1, batch_size=254, write_graph=True, write_grads=True, write_images=True, embeddings_freq=1)
 
-        model.fit([padded_docs, stocks, sentiment, volume, bearish], [categorical_labels], batch_size=254, epochs=200, callbacks=[checkpointer])
+        model.fit([padded_docs, stocks, sentiment, volume, bearish], [raw_labels], batch_size=254, epochs=200, callbacks=[checkpointer])
 
         # save model
         model.save('model.hdf5')
