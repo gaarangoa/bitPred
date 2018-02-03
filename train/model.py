@@ -118,12 +118,12 @@ class Train():
         # **************************** #
 
         merged_model = concatenate([text_model_output, stock_model_output, sentiment_model_output, volume_model_output, bearish_model_output], axis=1)
-        merged_model = Dense(1500, activation="relu")(merged_model)
+        merged_model = Dense(2500, activation="relu")(merged_model)
         merged_model = Dropout(0.5)(merged_model)
-        merged_model = Dense(1000, activation="relu")(merged_model)
+        merged_model = Dense(2000, activation="relu")(merged_model)
         merged_model = Dropout(0.5)(merged_model)
-        merged_model = Dense(600, activation="relu")(merged_model)
-        merged_model = Dense(100, activation="relu")(merged_model)
+        merged_model = Dense(800, activation="relu")(merged_model)
+        merged_model = Dense(400, activation="relu")(merged_model)
         merged_model_output = Dense(3, kernel_initializer='normal', activation = "relu", name = 'merged_model_output')(merged_model)
 
         model = Model(inputs = [text_model_input, stock_model_input, sentiment_model_input, volume_model_input, bearish_model_input], outputs = [merged_model_output])
