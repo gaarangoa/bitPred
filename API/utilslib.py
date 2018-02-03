@@ -1,5 +1,5 @@
 from bisect import bisect_left
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
 import re
 import numpy as np
 import pymongo
@@ -60,7 +60,8 @@ def format_input(data):
             i['text']
         ])
 
-    scaler = StandardScaler()
+    # scaler = StandardScaler()
+    scaler = MinMaxScaler(feature_range=(0, 1))
 
     # Normalize data
     timestamp = [i[0] for i in table]
