@@ -52,7 +52,7 @@ class Train():
 
         # dataset and class labels
         docs = data['text']
-        raw_labels = np.array( i[1:4] for i in data['regression'] )
+        raw_labels = np.array( [ [i[0][0],i[1][0],i[2][0]] for i in data['regression'] ])
 
         # labels_encoder = preprocessing.LabelEncoder()
         # labels_encoder.fit(raw_labels)
