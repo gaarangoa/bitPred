@@ -52,7 +52,7 @@ class Train():
 
         # dataset and class labels
         docs = data['text']
-        raw_labels = np.array([ i[1] for i in data['regression'] ])
+        raw_labels = np.array([ i[:3] for i in data['regression'] ])
 
         # labels_encoder = preprocessing.LabelEncoder()
         # labels_encoder.fit(raw_labels)
@@ -124,7 +124,7 @@ class Train():
         merged_model = Dropout(0.5)(merged_model)
         merged_model = Dense(600, activation="relu")(merged_model)
         merged_model = Dense(100, activation="relu")(merged_model)
-        merged_model_output = Dense(1, kernel_initializer='normal', activation = "relu", name = 'merged_model_output')(merged_model)
+        merged_model_output = Dense(3, kernel_initializer='normal', activation = "relu", name = 'merged_model_output')(merged_model)
 
         model = Model(inputs = [text_model_input, stock_model_input, sentiment_model_input, volume_model_input, bearish_model_input], outputs = [merged_model_output])
         model.compile(optimizer='adam', loss='mae')
@@ -137,11 +137,11 @@ class Train():
             pass
 
         # Train the model
-        checkpointer = ModelCheckpoint(filepath='./epoch/model.hdf5', verbose=1, save_weights_only=False)
+        checkpointer = ModelCheckpoint(filepath='./epoch/model-3-outputs.hdf5', verbose=1, save_weights_only=False)
         # tensorboard = keras.callbacks.TensorBoard(log_dir='./logs', histogram_freq=1, batch_size=254, write_graph=True, write_grads=True, write_images=True, embeddings_freq=1)
 
         model.fit([padded_docs, stocks, sentiment, volume, bearish], [raw_labels], batch_size=100, epochs=200, callbacks=[checkpointer])
 
         # save model
-        model.save('model.hdf5')
+        model.save('model-3-outputs.hdf5')
 
