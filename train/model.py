@@ -54,7 +54,7 @@ class Train():
         docs = data['text']
         raw_labels = np.array( [ i[1] for i in data['regression'] ])
         raw_labels_2 = np.array( [ i[2] for i in data['regression'] ])
-        raw_labels_2 = np.array( [ i[3] for i in data['regression'] ])
+        raw_labels_3 = np.array( [ i[3] for i in data['regression'] ])
 
         # labels_encoder = preprocessing.LabelEncoder()
         # labels_encoder.fit(raw_labels)
@@ -164,7 +164,7 @@ class Train():
         checkpointer = ModelCheckpoint(filepath='./epoch/model-3-outputs.hdf5', verbose=1, save_weights_only=False)
         # tensorboard = keras.callbacks.TensorBoard(log_dir='./logs', histogram_freq=1, batch_size=254, write_graph=True, write_grads=True, write_images=True, embeddings_freq=1)
 
-        model.fit([padded_docs, stocks, sentiment, volume, bearish], [raw_labels], batch_size=100, epochs=200, callbacks=[checkpointer])
+        model.fit([padded_docs, stocks, sentiment, volume, bearish], [raw_labels, raw_labels_2, raw_labels_3], batch_size=100, epochs=200, callbacks=[checkpointer])
 
         # save model
         model.save('model-3-outputs.hdf5')
