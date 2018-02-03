@@ -54,10 +54,10 @@ class Train():
         docs = data['text']
         raw_labels = np.array([ [i[0]] for i in data['regression'] ])
 
-        labels_encoder = preprocessing.LabelEncoder()
-        labels_encoder.fit(raw_labels)
-        encoded_labels = labels_encoder.transform(raw_labels)
-        categorical_labels = np_utils.to_categorical( encoded_labels )
+        # labels_encoder = preprocessing.LabelEncoder()
+        # labels_encoder.fit(raw_labels)
+        # encoded_labels = labels_encoder.transform(raw_labels)
+        # categorical_labels = np_utils.to_categorical( encoded_labels )
 
         # encode the documents
         encoded_docs = [one_hot(d, self.vocab_size) for d in docs] #uses a hash function to represent words, if words are similar they will have collisions
