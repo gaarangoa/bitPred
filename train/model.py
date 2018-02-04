@@ -68,7 +68,7 @@ class Train():
         # Build the model
         text_model_input = Input(shape = (self.max_length,), dtype="int32", name = 'text_model_input')
         text_model = Embedding(input_dim = self.vocab_size, mask_zero=True, output_dim = self.embedding_size, input_length = self.max_length, name="text-embedding" )(text_model_input)
-        text_model_output = LSTM(100, name = "text-lstm-2", return_sequences=False)(text_model)
+        text_model_output = LSTM(256, name = "text-lstm-2", return_sequences=False)(text_model)
         # text_model_output = LSTM(512, name = 'text-lstm-3')(text_model)
 
         # ---------------------------- #
@@ -79,7 +79,7 @@ class Train():
 
         # padded_stocks = np.array(pad_sequences(stocks, maxlen=self.max_length_stock_series, padding='pre'))
         stock_model_input = Input(shape = (self.max_length_stock_series, self.stock_embedding_size), dtype="float32", name = 'stock_model_input')
-        stock_model_output = LSTM(100, return_sequences=False, name = 'stock_lstm', input_shape = (self.max_length_stock_series, self.stock_embedding_size) )(stock_model_input)
+        stock_model_output = LSTM(512, return_sequences=False, name = 'stock_lstm', input_shape = (self.max_length_stock_series, self.stock_embedding_size) )(stock_model_input)
         # stock_model_output = LSTM(256)(stock_model)
 
 
@@ -101,8 +101,8 @@ class Train():
 
         # padded_bearish = np.array(pad_sequences(bearish, maxlen=self.max_length_stock_series, padding='pre'))
         bearish_model_input = Input(shape = (self.max_length_stock_series, self.stock_embedding_size), dtype="float32", name = 'bearish_model_input')
-        bearish_model = LSTM(100, return_sequences=True, name = 'bearish_lstm', input_shape = (self.max_length_stock_series, self.stock_embedding_size) )(bearish_model_input)
-        bearish_model_output = LSTM(100)(bearish_model)
+        bearish_model = LSTM(256, return_sequences=True, name = 'bearish_lstm', input_shape = (self.max_length_stock_series, self.stock_embedding_size) )(bearish_model_input)
+        bearish_model_output = LSTM(256)(bearish_model)
 
         # ---------------------------- #
         #       Sentiment Model        #
@@ -112,8 +112,8 @@ class Train():
 
         # padded_sentiment = np.array(pad_sequences(sentiment, maxlen=self.max_length_sentiment_series, padding='pre'))
         sentiment_model_input = Input(shape = (self.max_length_sentiment_series, self.sentiment_embedding_size), dtype="float32", name = 'bullish_model_input')
-        sentiment_model = LSTM(100, return_sequences=True, name = 'bullish_lstm', input_shape = (self.max_length_sentiment_series, self.sentiment_embedding_size) )(sentiment_model_input)
-        sentiment_model_output = LSTM(100)(sentiment_model)
+        sentiment_model = LSTM(256, return_sequences=True, name = 'bullish_lstm', input_shape = (self.max_length_sentiment_series, self.sentiment_embedding_size) )(sentiment_model_input)
+        sentiment_model_output = LSTM(256)(sentiment_model)
 
         # **************************** #
         #        MERGE MODELS          #
@@ -125,8 +125,8 @@ class Train():
         merged_model = Dropout(0.5)(merged_model)
         merged_model = Dense(800, activation="relu")(merged_model)
         merged_model = Dropout(0.5)(merged_model)
-        merged_model = Dense(600, activation="relu")(merged_model)
-        merged_model = Dense(200, activation="relu")(merged_model)
+        # merged_model = Dense(600, activation="relu")(merged_model)
+        # merged_model = Dense(200, activation="relu")(merged_model)
         merged_model_output = Dense(1, kernel_initializer='normal', activation = "relu", name = 'merged_model_output')(merged_model)
 
         # n+2
@@ -135,8 +135,8 @@ class Train():
         merged_model_2 = Dropout(0.5)(merged_model_2)
         merged_model_2 = Dense(800, activation="relu")(merged_model_2)
         merged_model_2 = Dropout(0.5)(merged_model_2)
-        merged_model_2 = Dense(600, activation="relu")(merged_model_2)
-        merged_model_2 = Dense(200, activation="relu")(merged_model_2)
+        # merged_model_2 = Dense(600, activation="relu")(merged_model_2)
+        # merged_model_2 = Dense(200, activation="relu")(merged_model_2)
         merged_model_2_output = Dense(1, kernel_initializer='normal', activation = "relu", name = 'merged_model_2_output')(merged_model_2)
 
         # n+3
@@ -145,8 +145,8 @@ class Train():
         merged_model_3 = Dropout(0.5)(merged_model_3)
         merged_model_3 = Dense(800, activation="relu")(merged_model_3)
         merged_model_3 = Dropout(0.5)(merged_model_3)
-        merged_model_3 = Dense(600, activation="relu")(merged_model_3)
-        merged_model_3 = Dense(200, activation="relu")(merged_model_3)
+        # merged_model_3 = Dense(600, activation="relu")(merged_model_3)
+        # merged_model_3 = Dense(200, activation="relu")(merged_model_3)
         merged_model_3_output = Dense(1, kernel_initializer='normal', activation = "relu", name = 'merged_model_3_output')(merged_model_3)
 
         model = Model(inputs = [text_model_input, stock_model_input, sentiment_model_input, volume_model_input, bearish_model_input], outputs = [merged_model_output, merged_model_2_output, merged_model_3_output])
@@ -161,11 +161,11 @@ class Train():
             pass
 
         # Train the model
-        checkpointer = ModelCheckpoint(filepath='./epoch/model-3-outputs-v2.hdf5', verbose=1, save_weights_only=False)
+        checkpointer = ModelCheckpoint(filepath='./epoch/model-3-outputs-v3.hdf5', verbose=1, save_weights_only=False)
         # tensorboard = keras.callbacks.TensorBoard(log_dir='./logs', histogram_freq=1, batch_size=254, write_graph=True, write_grads=True, write_images=True, embeddings_freq=1)
 
-        model.fit([padded_docs, stocks, sentiment, volume, bearish], [raw_labels, raw_labels_2, raw_labels_3], batch_size=100, epochs=200, callbacks=[checkpointer])
+        model.fit([padded_docs, stocks, sentiment, volume, bearish], [raw_labels, raw_labels_2, raw_labels_3], batch_size=1200, epochs=100, callbacks=[checkpointer])
 
         # save model
-        model.save('model-3-outputs-v2.hdf5')
+        model.save('model-3-outputs-v3.hdf5')
 
