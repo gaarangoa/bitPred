@@ -4,6 +4,8 @@ import re
 import numpy as np
 import pymongo
 
+look_back = 5;
+
 def take_closest(my_list, my_number):
     """
     Assumes my_list is sorted. Returns closest value to my_number.
@@ -33,6 +35,13 @@ def get_sentiment_stw(tweets=[]):
         except Exception as e:
             pass
     return sentiment
+
+def window_lookup(data=[]):
+    x = []
+    for ix in range(len(data)):
+        if ix<=look_back: continue
+        x.append( [i[0] for i in data[ix-look_back:ix] ])
+    return x
 
 def format_input(data):
     data = sorted(data, key=lambda k: k['time'])
@@ -65,14 +74,16 @@ def format_input(data):
 
     # Normalize data
     timestamp = [i[0] for i in table]
-    volume = scaler.fit_transform(np.array([i[1] for i in table]).reshape(-1, 1))
-    sopen = scaler.fit_transform(np.array([i[2] for i in table]).reshape(-1, 1))
-    sclose = scaler.fit_transform(np.array([i[3] for i in table]).reshape(-1, 1))
-    high = scaler.fit_transform(np.array([i[4] for i in table]).reshape(-1, 1))
-    low = scaler.fit_transform(np.array([i[5] for i in table]).reshape(-1, 1))
-    bearish = scaler.fit_transform(np.array([i[6] for i in table]).reshape(-1, 1))
-    bullish = scaler.fit_transform(np.array([i[7] for i in table]).reshape(-1, 1))
+    volume = window_lookup( scaler.fit_transform(np.array([i[1] for i in table]).reshape(-1, 1)) )
+    sopen = window_lookup( scaler.fit_transform(np.array([i[2] for i in table]).reshape(-1, 1)) )
+    sclose = window_lookup( scaler.fit_transform(np.array([i[3] for i in table]).reshape(-1, 1)) )
+    high = window_lookup( scaler.fit_transform(np.array([i[4] for i in table]).reshape(-1, 1)) )
+    low = window_lookup( scaler.fit_transform(np.array([i[5] for i in table]).reshape(-1, 1)) )
+    bearish = window_lookup( scaler.fit_transform(np.array([i[6] for i in table]).reshape(-1, 1)) )
+    bullish = window_lookup( scaler.fit_transform(np.array([i[7] for i in table]).reshape(-1, 1)) )
     comments = [" ".join([i[8] for i in table])]
+    
+
 
     return {
         "timestamp":[timestamp],
@@ -87,13 +98,14 @@ def format_input(data):
     }
 
 
-def get_data(max_timestamp=0, client=[], symbol='BTC.X', timeframe='History_5m', window=15):
+def get_data(max_timestamp=0, client=[], symbol='BTC.X', timeframe='history_15m', window=15):
     stw = client.stocktwits[symbol]
     gdax = client.gdax[timeframe]
 
     # find the data between the range. To do so, first get the max-timestamp and go back in time up to the max length series (15 default). First for gdax, so, we can get the more accurate data.
 
-    stocks = [i for i in gdax.find({"time":{"$lte": max_timestamp}}).sort([("time", pymongo.DESCENDING)]).limit(window)]
+    stocks = [i for i in gdax.find({"time":{"$lte": max_timestamp}}).sort([("time", pymongo.DESCENDING)]).limit(window+6)]
+    # print stocks
     stocks.reverse()
     min_t = stocks[0]['time']
     max_t = stocks[-1]['time']

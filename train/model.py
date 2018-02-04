@@ -72,7 +72,7 @@ class Train():
         # text_model_output = LSTM(512, name = 'text-lstm-3')(text_model)
 
         # ---------------------------- #
-        #         Close  Model         #
+        #         Stock  Model         #
         # ---------------------------- #
 
         stocks = np.array(data['close'])
@@ -161,11 +161,11 @@ class Train():
             pass
 
         # Train the model
-        checkpointer = ModelCheckpoint(filepath='./epoch/model-3-outputs.hdf5', verbose=1, save_weights_only=False)
+        checkpointer = ModelCheckpoint(filepath='./epoch/model-3-outputs-v2.hdf5', verbose=1, save_weights_only=False)
         # tensorboard = keras.callbacks.TensorBoard(log_dir='./logs', histogram_freq=1, batch_size=254, write_graph=True, write_grads=True, write_images=True, embeddings_freq=1)
 
         model.fit([padded_docs, stocks, sentiment, volume, bearish], [raw_labels, raw_labels_2, raw_labels_3], batch_size=100, epochs=200, callbacks=[checkpointer])
 
         # save model
-        model.save('model-3-outputs.hdf5')
+        model.save('model-3-outputs-v2.hdf5')
 

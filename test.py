@@ -11,6 +11,17 @@ p = Predict()
 max_time = int(time.time())
 timestamp = max_time - 10*900
 
+x = p.pred(max_timestamp=timestamp, data_window=15)
+
+import API.utilslib as utilslib
+client = pymongo.MongoClient("mongodb://localhost", 11914)
+data = utilslib.get_data(max_timestamp=timestamp, client=client, window=15, symbol='BTC.X', timeframe='history_15m')
+
+
+
+
+
+
 t1 = datetime.datetime.fromtimestamp(timestamp)
 plt.ion()
 # x = p.pred(max_timestamp=timestamp, data_window=15)
@@ -22,7 +33,7 @@ index = []
 ix = 0
 while not timestamp == max_time:
     index.append(ix)
-    x = p.pred(max_timestamp=timestamp, data_window=15)
+    
     x2 = p.pred(max_timestamp=timestamp+900, data_window=15)
     # 
     # real.append(x[1]['close'][0][-1][0])
@@ -57,7 +68,7 @@ plt.figure(1)
 
 
 from pymongo import MongoClient
-gdax = MongoClient("mongodb://localhost", 11914).gdax["history_15m"]
+gdax = pymongo.MongoClient("mongodb://localhost", 11914).gdax["history_15m"]
 timestamp = x['timestamp'][index]
 stocks = [i['close'] for i in gdax.find({"time":{"$gte": timestamp}}).sort([("time", pymongo.ASCENDING)]).limit(20)]
 
