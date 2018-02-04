@@ -4,7 +4,10 @@ import re
 import numpy as np
 import pymongo
 
-look_back = 5;
+from keras.preprocessing.text import one_hot
+from keras.preprocessing.sequence import pad_sequences
+
+look_back = 2;
 
 def take_closest(my_list, my_number):
     """
@@ -81,13 +84,15 @@ def format_input(data):
     low = window_lookup( scaler.fit_transform(np.array([i[5] for i in table]).reshape(-1, 1)) )
     bearish = window_lookup( scaler.fit_transform(np.array([i[6] for i in table]).reshape(-1, 1)) )
     bullish = window_lookup( scaler.fit_transform(np.array([i[7] for i in table]).reshape(-1, 1)) )
-    comments = [" ".join([i[8] for i in table])]
+    docs = " ".join([i[8] for i in table])
     
-
+    # print(docs)
+    # encoded_docs = [one_hot(docs, 1000)] #uses a hash function to represent words, if words are similar they will have collisions
+    # padded_docs = pad_sequences(encoded_docs, maxlen=500, padding='post')
 
     return {
         "timestamp":[timestamp],
-        "text": comments,
+        "text": docs,
         "open": [np.array(sopen)],
         "close": [np.array(sclose)],
         "high": [np.array(high)],

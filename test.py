@@ -3,55 +3,70 @@ import matplotlib.pyplot as plt
 import datetime
 import pymongo
 import numpy as np
-
+import json
 import time
 
 p = Predict()
 
 max_time = int(time.time())
-timestamp = max_time - 10*900
+timestamp = max_time - 1000*900
 
 x = p.pred(max_timestamp=timestamp, data_window=15)
+real = []
+pred = [x[0][0][0][0]]
+index = []
+ix = 0
+while not timestamp == max_time:
+    index.append(ix)
+    x = p.pred(max_timestamp=timestamp, data_window=15)
+    real.append(x[1]['close'][0][0][0])
+    py, = plt.plot(index,real, label="real signal", color='blue')
+    px, = plt.plot(index,pred, label="prediction", color='red')
+    plt.legend(handles=[px, py])
+    plt.draw()
+    plt.pause(0.2)
+    pred.append(x[0][0][0][0])
+    timestamp+=900
+    ix+=1
+
+
+
+
+
+
+
+
+while 1:
+    max_time = int(time.time())
+    x = p.pred(max_timestamp=timestamp, data_window=15)
+
+
+
 
 import API.utilslib as utilslib
 client = pymongo.MongoClient("mongodb://localhost", 11914)
 data = utilslib.get_data(max_timestamp=timestamp, client=client, window=15, symbol='BTC.X', timeframe='history_15m')
-
-
-
-
-
 
 t1 = datetime.datetime.fromtimestamp(timestamp)
 plt.ion()
 # x = p.pred(max_timestamp=timestamp, data_window=15)
 # timestamp+=900
 
-real = []
-predx = []
-index = []
-ix = 0
-while not timestamp == max_time:
-    index.append(ix)
-    
-    x2 = p.pred(max_timestamp=timestamp+900, data_window=15)
-    # 
-    # real.append(x[1]['close'][0][-1][0])
-    # 
-    py, = plt.plot(x[1]['close'][0].tolist()+x2[1]['close'][0].tolist(), label="real signal", color='blue')
-    px, = plt.plot([15, 16, 17], [i[0][0] for i in x[0]], label="prediction", color='red')
-    plt.legend(handles=[px, py])
-    plt.draw()
-    plt.pause(5)
-    plt.cla()
-    # predx.append(x[0][2][0][0])
-    timestamp+=900
-    ix+=1
 
-while 1:
-    max_time = int(time.time())
-    x = p.pred(max_timestamp=timestamp, data_window=15)
+data = json.load(open('./train/data.json'))
+stocks = np.array([ data['close'][0] ])
+volume = np.array([ data['volume'][0] ])
+bearish = np.array([ data['bearish'][0] ])
+sentiment =np.array([ data['bullish'][0] ])
+docs = [data['text'][-1]]
 
+from keras.preprocessing.text import one_hot
+from keras.preprocessing.sequence import pad_sequences
+
+encoded_docs = [one_hot(d, 1000) for d in docs] #uses a hash function to represent words, if words are similar they will have collisions
+padded_docs = pad_sequences(encoded_docs, maxlen=500, padding='post')
+
+p.model.predict([padded_docs, stocks, sentiment, volume, bearish])
 
 
 

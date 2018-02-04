@@ -130,7 +130,7 @@ class Train():
         merged_model_output = Dense(1, kernel_initializer='normal', activation = "relu", name = 'merged_model_output')(merged_model)
 
         # n+2
-        merged_model_2 = concatenate([text_model_output, stock_model_output, sentiment_model_output, volume_model_output, bearish_model_output, merged_model_output], axis=1)
+        merged_model_2 = concatenate([text_model_output, stock_model_output, sentiment_model_output, volume_model_output, bearish_model_output], axis=1)
         merged_model_2 = Dense(1200, activation="relu")(merged_model_2)
         merged_model_2 = Dropout(0.5)(merged_model_2)
         merged_model_2 = Dense(800, activation="relu")(merged_model_2)
@@ -140,7 +140,7 @@ class Train():
         merged_model_2_output = Dense(1, kernel_initializer='normal', activation = "relu", name = 'merged_model_2_output')(merged_model_2)
 
         # n+3
-        merged_model_3 = concatenate([text_model_output, stock_model_output, sentiment_model_output, volume_model_output, bearish_model_output, merged_model_output, merged_model_2_output], axis=1)
+        merged_model_3 = concatenate([text_model_output, stock_model_output, sentiment_model_output, volume_model_output, bearish_model_output], axis=1)
         merged_model_3 = Dense(1200, activation="relu")(merged_model_3)
         merged_model_3 = Dropout(0.5)(merged_model_3)
         merged_model_3 = Dense(800, activation="relu")(merged_model_3)

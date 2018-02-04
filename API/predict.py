@@ -30,7 +30,7 @@ class Predict():
         data = utilslib.get_data(max_timestamp=max_timestamp, client=self.client, symbol=self.symbol, timeframe=self.timeframe, window=self.data_window)
 
         docs = data['text']
-        encoded_docs = [one_hot(d, config.vocab_size) for d in docs] #uses a hash function to represent words, if words are similar they will have collisions
+        encoded_docs = [one_hot(docs, config.vocab_size)] #uses a hash function to represent words, if words are similar they will have collisions
         padded_docs = pad_sequences(encoded_docs, maxlen=config.max_length, padding='post')
         
         stocks = np.array(data['close'])
