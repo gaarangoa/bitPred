@@ -53,8 +53,8 @@ class Train():
         # dataset and class labels
         docs = data['text']
         raw_labels = np.array( [ i[1] for i in data['regression'] ])
-        raw_labels_2 = np.array( [ i[2] for i in data['regression'] ])
-        raw_labels_3 = np.array( [ i[3] for i in data['regression'] ])
+        raw_labels_2 = np.array( [ i[3] for i in data['regression'] ])
+        raw_labels_3 = np.array( [ i[5] for i in data['regression'] ])
 
         # labels_encoder = preprocessing.LabelEncoder()
         # labels_encoder.fit(raw_labels)
@@ -79,7 +79,7 @@ class Train():
 
         # padded_stocks = np.array(pad_sequences(stocks, maxlen=self.max_length_stock_series, padding='pre'))
         stock_model_input = Input(shape = (self.max_length_stock_series, self.stock_embedding_size), dtype="float32", name = 'stock_model_input')
-        stock_model_output = LSTM(256, return_sequences=False, name = 'stock_lstm', input_shape = (self.max_length_stock_series, self.stock_embedding_size) )(stock_model_input)
+        stock_model_output = LSTM(100, return_sequences=False, name = 'stock_lstm', input_shape = (self.max_length_stock_series, self.stock_embedding_size) )(stock_model_input)
         # stock_model_output = LSTM(256)(stock_model)
 
 
@@ -101,8 +101,8 @@ class Train():
 
         # padded_bearish = np.array(pad_sequences(bearish, maxlen=self.max_length_stock_series, padding='pre'))
         bearish_model_input = Input(shape = (self.max_length_stock_series, self.stock_embedding_size), dtype="float32", name = 'bearish_model_input')
-        bearish_model = LSTM(256, return_sequences=True, name = 'bearish_lstm', input_shape = (self.max_length_stock_series, self.stock_embedding_size) )(bearish_model_input)
-        bearish_model_output = LSTM(256)(bearish_model)
+        bearish_model = LSTM(100, return_sequences=True, name = 'bearish_lstm', input_shape = (self.max_length_stock_series, self.stock_embedding_size) )(bearish_model_input)
+        bearish_model_output = LSTM(100)(bearish_model)
 
         # ---------------------------- #
         #       Sentiment Model        #
@@ -112,8 +112,8 @@ class Train():
 
         # padded_sentiment = np.array(pad_sequences(sentiment, maxlen=self.max_length_sentiment_series, padding='pre'))
         sentiment_model_input = Input(shape = (self.max_length_sentiment_series, self.sentiment_embedding_size), dtype="float32", name = 'bullish_model_input')
-        sentiment_model = LSTM(256, return_sequences=True, name = 'bullish_lstm', input_shape = (self.max_length_sentiment_series, self.sentiment_embedding_size) )(sentiment_model_input)
-        sentiment_model_output = LSTM(256)(sentiment_model)
+        sentiment_model = LSTM(100, return_sequences=True, name = 'bullish_lstm', input_shape = (self.max_length_sentiment_series, self.sentiment_embedding_size) )(sentiment_model_input)
+        sentiment_model_output = LSTM(100)(sentiment_model)
 
         # **************************** #
         #        MERGE MODELS          #

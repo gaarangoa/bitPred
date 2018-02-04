@@ -13,7 +13,7 @@ from train import model
 from train import config
 from sklearn.preprocessing import StandardScaler
 
-scaler = StandardScaler()
+
 class Predict():
     def __init__(self, model_name="./API/regression.hdf5"):
         self.par = model.Train()
@@ -41,43 +41,6 @@ class Predict():
         pred = self.model.predict([padded_docs, stocks, sentiment, volume, bearish])
 
         return [pred, data]
-
-
-import matplotlib.pyplot as plt
-import datetime
-import pymongo
-import numpy as np
-
-def vis(data=[], p=[]):
-    pred = data[0]
-    data = data[1]
-    first_timestamp = data['timestamp'][0][0]
-    gdax = p.client.gdax[p.timeframe]
-    stocks = [i for i in gdax.find({"time":{"$gte": first_timestamp}}).sort([("time", pymongo.ASCENDING)]).limit(20)]
-    price2 = scaler.fit_transform( np.array([i['close'] for i in stocks]).reshape(-1, 1) )
-    # 
-    price = data['close'][0]
-    # 
-    fmt = "%Y-%m-%d %H:%M:%S"
-    t1 = datetime.datetime.fromtimestamp(float(stocks[13]['time']))
-    t2 = datetime.datetime.fromtimestamp(float(stocks[14]['time']))
-    #
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-    # 
-    # ax.scatter(price2)
-    # ax.scatter(price)
-    # ax.plot(price)
-    ax.plot(price2)
-    ax.scatter(14, price2[14])
-    ax.scatter(15, pred)
-    tx = "Pred: "+str(pred[0][0])
-    ax.text(15, pred, tx)
-    ax.text(14, price2[14], "Now")
-    ax.text(1, max(price2), t1.strftime(fmt))
-    ax.text(10, max(price2), t2.strftime(fmt))
-    plt.show()
-
 
 
 def test():
