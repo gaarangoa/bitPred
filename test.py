@@ -9,23 +9,27 @@ import time
 p = Predict()
 
 max_time = int(time.time())
-timestamp = max_time - 50*900
+timestamp = max_time - 100*900
 
-x = p.pred(max_timestamp=timestamp, data_window=15)
+x = p.pred(max_timestamp=timestamp, data_window=12)
+# real = [x[1]['close'][0][0][0]]
+pred = [x[0][0][0][0]]
+# pred = []
 real = []
-pred = [x[0][2][0][0]]
 index = []
 ix = 0
 while not timestamp == max_time:
     index.append(ix)
-    x = p.pred(max_timestamp=timestamp, data_window=15)
+    x = p.pred(max_timestamp=timestamp, data_window=12)
     real.append(x[1]['close'][0][0][0])
+    # pred.append(x[0][0][0][0])
     py, = plt.plot(index,real, label="real signal", color='blue')
     px, = plt.plot(index,pred, label="prediction", color='red')
     plt.legend(handles=[px, py])
     plt.draw()
     plt.pause(0.2)
-    pred.append(x[0][2][0][0])
+    pred.append(x[0][0][0][0])
+    # real.append(x[1]['close'][0][0][0])
     timestamp+=900
     ix+=1
 
