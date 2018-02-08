@@ -79,7 +79,7 @@ class Train():
         #         Stock  Model         #
         # ---------------------------- #
 
-        stocks = np.array(data['close'])
+        stocks = np.array(data['max'])
 
         # padded_stocks = np.array(pad_sequences(stocks, maxlen=self.max_length_stock_series, padding='pre'))
         stock_model_input = Input(shape = (self.max_length_stock_series, self.stock_embedding_size), dtype="float32", name = 'stock_model_input')
