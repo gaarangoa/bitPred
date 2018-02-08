@@ -44,7 +44,11 @@ class Train():
 
     def run(self):
         # load the data
-        data = json.load(open(self.dataset))
+        dataset = json.load(open(self.dataset))     
+
+        # split into train and test sets
+        train_size = int(len(dataset) * 0.67)
+        data, test = dataset[0:train_size,:], dataset[train_size:len(data),:]
 
         # ---------------------------- #
         #  topology for the text LSTM  #
@@ -53,8 +57,8 @@ class Train():
         # dataset and class labels
         docs = data['text']
         raw_labels = np.array( [ i[1] for i in data['regression'] ])
-        raw_labels_2 = np.array( [ i[2] for i in data['regression'] ])
-        raw_labels_3 = np.array( [ i[3] for i in data['regression'] ])
+        # raw_labels_2 = np.array( [ i[2] for i in data['regression'] ])
+        # raw_labels_3 = np.array( [ i[3] for i in data['regression'] ])
 
         # labels_encoder = preprocessing.LabelEncoder()
         # labels_encoder.fit(raw_labels)
@@ -125,31 +129,31 @@ class Train():
         merged_model = Dropout(0.5)(merged_model)
         merged_model = Dense(800, activation="relu")(merged_model)
         merged_model = Dropout(0.5)(merged_model)
-        # merged_model = Dense(600, activation="relu")(merged_model)
-        # merged_model = Dense(200, activation="relu")(merged_model)
+        merged_model = Dense(600, activation="relu")(merged_model)
+        merged_model = Dense(200, activation="relu")(merged_model)
         merged_model_output = Dense(1, kernel_initializer='normal', activation = "relu", name = 'merged_model_output')(merged_model)
 
         # n+2
-        merged_model_2 = concatenate([text_model_output, stock_model_output, sentiment_model_output, volume_model_output, bearish_model_output], axis=1)
-        merged_model_2 = Dense(1200, activation="relu")(merged_model_2)
-        merged_model_2 = Dropout(0.5)(merged_model_2)
-        merged_model_2 = Dense(800, activation="relu")(merged_model_2)
-        merged_model_2 = Dropout(0.5)(merged_model_2)
-        # merged_model_2 = Dense(600, activation="relu")(merged_model_2)
-        # merged_model_2 = Dense(200, activation="relu")(merged_model_2)
-        merged_model_2_output = Dense(1, kernel_initializer='normal', activation = "relu", name = 'merged_model_2_output')(merged_model_2)
+        # merged_model_2 = concatenate([text_model_output, stock_model_output, sentiment_model_output, volume_model_output, bearish_model_output], axis=1)
+        # merged_model_2 = Dense(1200, activation="relu")(merged_model_2)
+        # merged_model_2 = Dropout(0.5)(merged_model_2)
+        # merged_model_2 = Dense(800, activation="relu")(merged_model_2)
+        # merged_model_2 = Dropout(0.5)(merged_model_2)
+        # # merged_model_2 = Dense(600, activation="relu")(merged_model_2)
+        # # merged_model_2 = Dense(200, activation="relu")(merged_model_2)
+        # merged_model_2_output = Dense(1, kernel_initializer='normal', activation = "relu", name = 'merged_model_2_output')(merged_model_2)
 
         # n+3
-        merged_model_3 = concatenate([text_model_output, stock_model_output, sentiment_model_output, volume_model_output, bearish_model_output], axis=1)
-        merged_model_3 = Dense(1200, activation="relu")(merged_model_3)
-        merged_model_3 = Dropout(0.5)(merged_model_3)
-        merged_model_3 = Dense(800, activation="relu")(merged_model_3)
-        merged_model_3 = Dropout(0.5)(merged_model_3)
-        # merged_model_3 = Dense(600, activation="relu")(merged_model_3)
-        # merged_model_3 = Dense(200, activation="relu")(merged_model_3)
-        merged_model_3_output = Dense(1, kernel_initializer='normal', activation = "relu", name = 'merged_model_3_output')(merged_model_3)
+        # merged_model_3 = concatenate([text_model_output, stock_model_output, sentiment_model_output, volume_model_output, bearish_model_output], axis=1)
+        # merged_model_3 = Dense(1200, activation="relu")(merged_model_3)
+        # merged_model_3 = Dropout(0.5)(merged_model_3)
+        # merged_model_3 = Dense(800, activation="relu")(merged_model_3)
+        # merged_model_3 = Dropout(0.5)(merged_model_3)
+        # # merged_model_3 = Dense(600, activation="relu")(merged_model_3)
+        # # merged_model_3 = Dense(200, activation="relu")(merged_model_3)
+        # merged_model_3_output = Dense(1, kernel_initializer='normal', activation = "relu", name = 'merged_model_3_output')(merged_model_3)
 
-        model = Model(inputs = [text_model_input, stock_model_input, sentiment_model_input, volume_model_input, bearish_model_input], outputs = [merged_model_output, merged_model_2_output, merged_model_3_output])
+        model = Model(inputs = [text_model_input, stock_model_input, sentiment_model_input, volume_model_input, bearish_model_input], outputs = [merged_model_output ])
 
         model.compile(optimizer='adam', loss='mae')
         print(model.summary())
@@ -164,7 +168,7 @@ class Train():
         checkpointer = ModelCheckpoint(filepath='./epoch/model-3-outputs-v3.hdf5', verbose=1, save_weights_only=False)
         # tensorboard = keras.callbacks.TensorBoard(log_dir='./logs', histogram_freq=1, batch_size=254, write_graph=True, write_grads=True, write_images=True, embeddings_freq=1)
 
-        model.fit([padded_docs, stocks, sentiment, volume, bearish], [raw_labels, raw_labels_2, raw_labels_3], batch_size=1200, epochs=100, callbacks=[checkpointer])
+        model.fit([padded_docs, stocks, sentiment, volume, bearish], [raw_labels], batch_size=800, epochs=100, callbacks=[checkpointer])
 
         # save model
         model.save('model-3-outputs-v3.hdf5')

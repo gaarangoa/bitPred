@@ -10,40 +10,69 @@ p = Predict()
 
 max_time = int(time.time())
 timestamp = max_time - 100*900
+t = datetime.datetime.fromtimestamp(timestamp)
+x, xr, signal = p.pred(max_timestamp=timestamp, data_window=11)
 
-x = p.pred(max_timestamp=timestamp, data_window=12)
-# real = [x[1]['close'][0][0][0]]
-pred = [x[0][0][0][0]]
+timestamp+=900
+# real = [xr['close'][0][0][0]]
+pred = [x[0][0][0]]
+sigl = []
 # pred = []
+# real = [xr['close'][0][-1]]
 real = []
 index = []
 ix = 0
+plt.figure(1)
+
 while not timestamp == max_time:
     index.append(ix)
-    x = p.pred(max_timestamp=timestamp, data_window=12)
-    real.append(x[1]['close'][0][0][0])
+    x, xr, signal = p.pred(max_timestamp=timestamp, data_window=11)
+    real.append(xr['close'][0][-1])
+    sigl.append(signal[-1])
     # pred.append(x[0][0][0][0])
+    plt.subplot(311)
     py, = plt.plot(index,real, label="real signal", color='blue')
-    px, = plt.plot(index,pred, label="prediction", color='red')
-    plt.legend(handles=[px, py])
+    px, = plt.plot(index,pred, label="n+1", color='red')
+    plt.legend(handles=[px])
     plt.draw()
     plt.pause(0.2)
-    pred.append(x[0][0][0][0])
-    # real.append(x[1]['close'][0][0][0])
+    pred.append(x[0][0][0])
+    plt.subplot(312)
+    pz, = plt.plot(index, sigl, label="real signal", color='blue')
+    plt.legend(handles = [py,pz])
+    print(t)
+    # real.append(xr['close'][0][-1])
     timestamp+=900
     ix+=1
-
-
-
-
-
-
 
 
 while 1:
     max_time = int(time.time())
     x = p.pred(max_timestamp=timestamp, data_window=15)
+    real.append(x[1]['close'][0][0][0])
+    py, = plt.plot(index,real, label="real signal", color='blue')
+    px, = plt.plot(index,pred, label="prediction", color='red')
+    plt.legend(handles=[px, py])
+    plt.draw()
+    plt.pause(120)
 
+
+
+
+def vis(step=0):
+    max_time = int(time.time())
+    timestamp = max_time - step*900
+    t = datetime.datetime.fromtimestamp(timestamp)
+    x, xr, signal = p.pred(max_timestamp=timestamp, data_window=11)
+    # 
+    label = 'bullish'
+    if x[0][0][0] < xr['close'][0][-1][0]: 
+        label = 'bearish'
+    # 
+    print(t)
+    print('the price is', signal[-1], 'and it will tend to ', label )
+    print(x)
+    return (x,xr,signal,t)
 
 
 

@@ -7,7 +7,7 @@ import pymongo
 from keras.preprocessing.text import one_hot
 from keras.preprocessing.sequence import pad_sequences
 
-look_back = 2;
+look_back = 1;
 
 def take_closest(my_list, my_number):
     """
@@ -151,4 +151,4 @@ def get_data(max_timestamp=0, client=[], symbol='BTC.X', timeframe='history_15m'
 
     data = format_input(stocks_ob.values())
 
-    return data
+    return [data, [i['close'] for i in stocks] ]

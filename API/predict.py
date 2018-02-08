@@ -27,7 +27,7 @@ class Predict():
         self.data_window = data_window
         # assuming query has the data in the right format
         print("Loading input file")
-        data = utilslib.get_data(max_timestamp=max_timestamp, client=self.client, symbol=self.symbol, timeframe=self.timeframe, window=self.data_window)
+        data, signal = utilslib.get_data(max_timestamp=max_timestamp, client=self.client, symbol=self.symbol, timeframe=self.timeframe, window=self.data_window)
 
         docs = data['text']
         encoded_docs = [one_hot(docs, config.vocab_size)] #uses a hash function to represent words, if words are similar they will have collisions
@@ -40,7 +40,7 @@ class Predict():
         
         pred = self.model.predict([padded_docs, stocks, sentiment, volume, bearish])
 
-        return [pred, data]
+        return [pred, data, signal]
 
 
 def test():
