@@ -56,7 +56,7 @@ class Train():
 
         # dataset and class labels
         docs = data['text']
-        raw_labels = np.array( [ i[1] for i in data['regression'] ])
+        raw_labels = np.array( [ i[2] for i in data['regression'] ])
         # raw_labels_2 = np.array( [ i[2] for i in data['regression'] ])
         # raw_labels_3 = np.array( [ i[3] for i in data['regression'] ])
 
